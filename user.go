@@ -54,18 +54,35 @@ func (u *User) GetNewLights() ([]Light, time.Time, error) {
 	}
 	delete(newLightsResponse, "lastscan")
 	
-	lights := make([]Light, 0, 10)
-	for lightId, lightInterface := range newLightsResponse {
-		lightMap, ok := lightInterface.(map[string]interface{})
-		if !ok {
-			return nil, time.Time{}, errors.New("Error casting light interface")
-		}
-		name, ok := lightMap["name"].(string)
-		if !ok {
-			return nil, time.Time{}, errors.New("Error casting light interface")
-		}
-		lights = append(lights, Light{Id: lightId, Name: name})
+	lights, err := parseLights(newLightsResponse)
+	if err != nil {
+		return nil, time.Time{}, err
 	}
 
 	return lights, lastScan, nil
+}
+
+func parseLights(newLightsResponse map[string]interface{}) ([]Light, error) {
+	lights := make([]Light, 0, 10)
+	
+	for lightId, lightInterface := range newLightsResponse {
+		lightMap, ok := lightInterface.(map[string]interface{})
+		if !ok {
+			// return nil, newParseError(reflect.TypeOf(map[string]interface{}), lightInterface, "lights map")
+			return nil, newParseError()
+		}
+		name, ok := lightMap["name"].(string)
+		if !ok {
+			// return nil, newParseError(string, lightMap["name"], "light name")
+			return nil, newParseError()
+		}
+		lights = append(lights, Light{Id: lightId, Name: name})
+	}
+	
+	return lights, nil
+}
+
+// func newParseError(expected reflect.Type, actual interface{}, context string) error {
+func newParseError() error {
+	return errors.New("Error parsing api response.")
 }
