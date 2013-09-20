@@ -43,11 +43,15 @@ func (s *httpServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 
 type stubServer struct {
 	requestJson  string
+	uri string
+	method string
 	responseFile string
 }
 
 func (s *stubServer) Do(method string, uri string, requestBytes []byte) ([]byte, error) {
 	s.requestJson = string(requestBytes)
+	s.uri = uri
+	s.method = method
 	
 	var path string
 	if s.responseFile == "" {

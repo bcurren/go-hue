@@ -5,7 +5,7 @@ package hue
 // 
 // 
 // 
-// bridges, err := hue.FindBridge()
+// bridges, err := hue.FindBridges()
 // if err != nil {
 // 	return
 // }
