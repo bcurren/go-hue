@@ -59,3 +59,9 @@ func Test_GetNewLights(t *testing.T) {
 	assertEqual(t, "7", lights[0].Id, "lights[0].Id")
 	assertEqual(t, "Hue Lamp 7", lights[0].Name, "lights[0].Name")
 }
+
+func Test_ApiParseErrorString(t *testing.T) {
+	err := NewApiError("string", 1, "user count")
+	assertEqual(t, "Parsing error: expected type 'string' but received 'int' for user count.", 
+		err.Error(), "err message")
+}

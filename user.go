@@ -3,7 +3,6 @@ package hue
 import (
 	"fmt"
 	"time"
-	"errors"
 )
 
 const ISO8601 = "2006-01-02T15:04:05"
@@ -46,7 +45,7 @@ func (u *User) GetNewLights() ([]Light, time.Time, error) {
 
 	lastScanString, ok := lightsMap["lastscan"].(string)
 	if !ok {
-		return nil, time.Time{}, errors.New("Error parsing lastscan")
+		return nil, time.Time{}, NewApiError("string", lightsMap["lastscan"], "lastscan")
 	}
 	lastScan, err := time.Parse(ISO8601, lastScanString)
 	if err != nil {
@@ -68,19 +67,11 @@ func parseLights(lightsMap map[string]interface{}) ([]Light, error) {
 	for lightId, lightInterface := range lightsMap {
 		lightMap, ok := lightInterface.(map[string]interface{})
 		if !ok {
-			return nil, &ApiParseError{
-				Expected: "map[string]interface{}",
-				Actual: lightInterface,
-				Context: "lights map",
-			}
+			return nil, NewApiError("map[string]interface{}", lightInterface, "lights map")
 		}
 		name, ok := lightMap["name"].(string)
 		if !ok {
-			return nil, &ApiParseError{
-				Expected: "string",
-				Actual: lightMap["name"],
-				Context: "lights name",
-			}
+			return nil, NewApiError("string", lightMap["name"], "lights name")
 		}
 		lights = append(lights, Light{Id: lightId, Name: name})
 	}
@@ -92,6 +83,10 @@ type ApiParseError struct {
 	Expected string
 	Actual interface{}
 	Context string
+}
+
+func NewApiError(expected string, actual interface{}, context string) error {
+	return &ApiParseError{Expected: expected, Actual: actual, Context: context}
 }
 
 func (e *ApiParseError) Error() string {
