@@ -44,13 +44,13 @@ func Test_GetNewLights(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	expectatedLastScan, err := time.Parse(ISO8601, "2012-10-29T12:00:00")
 	if err != nil {
 		t.Fatal(err)
 	}
 	assertEqual(t, expectatedLastScan, lastScan, "lastScan")
-	
+
 	assertEqual(t, "GET", stubServer.method, "method is get")
 	assertEqual(t, fmt.Sprintf("/api/%s/lights/new", user.Username), stubServer.uri, "uri is correct")
 
@@ -62,6 +62,6 @@ func Test_GetNewLights(t *testing.T) {
 
 func Test_ApiParseErrorString(t *testing.T) {
 	err := NewApiError("string", 1, "user count")
-	assertEqual(t, "Parsing error: expected type 'string' but received 'int' for user count.", 
+	assertEqual(t, "Parsing error: expected type 'string' but received 'int' for user count.",
 		err.Error(), "err message")
 }

@@ -52,7 +52,7 @@ func (u *User) GetNewLights() ([]Light, time.Time, error) {
 		return nil, time.Time{}, err
 	}
 	delete(lightsMap, "lastscan")
-	
+
 	lights, err := parseLights(lightsMap)
 	if err != nil {
 		return nil, time.Time{}, err
@@ -63,7 +63,7 @@ func (u *User) GetNewLights() ([]Light, time.Time, error) {
 
 func parseLights(lightsMap map[string]interface{}) ([]Light, error) {
 	lights := make([]Light, 0, 10)
-	
+
 	for lightId, lightInterface := range lightsMap {
 		lightMap, ok := lightInterface.(map[string]interface{})
 		if !ok {
@@ -75,14 +75,14 @@ func parseLights(lightsMap map[string]interface{}) ([]Light, error) {
 		}
 		lights = append(lights, Light{Id: lightId, Name: name})
 	}
-	
+
 	return lights, nil
 }
 
 type ApiParseError struct {
 	Expected string
-	Actual interface{}
-	Context string
+	Actual   interface{}
+	Context  string
 }
 
 func NewApiError(expected string, actual interface{}, context string) error {
@@ -90,6 +90,6 @@ func NewApiError(expected string, actual interface{}, context string) error {
 }
 
 func (e *ApiParseError) Error() string {
-	return fmt.Sprintf("Parsing error: expected type '%s' but received '%T' for %s.", 
+	return fmt.Sprintf("Parsing error: expected type '%s' but received '%T' for %s.",
 		e.Expected, e.Actual, e.Context)
 }
