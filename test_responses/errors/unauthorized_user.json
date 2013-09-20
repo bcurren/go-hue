@@ -1,0 +1,7 @@
+[{
+	"error": {
+		"type": 1,
+		"address": "/lights",
+		"description": "unauthorized user"
+	}
+}]

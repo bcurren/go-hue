@@ -6,21 +6,23 @@ import (
 	"net/http"
 	"strings"
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
 )
 
 type server interface {
-	Do(method string, uri string, reqBytes []byte) ([]byte, error)
+	Do(method string, uri string, requestBytes []byte) ([]byte, error)
 }
 
 type httpServer struct {
 	addr string
 }
 
-func (s *httpServer) Do(method string, uri string, reqBytes []byte) ([]byte, error) {
-	if reqBytes == nil {
-		reqBytes = make([]byte, 0, 0)
+func (s *httpServer) Do(method string, uri string, requestBytes []byte) ([]byte, error) {
+	if requestBytes == nil {
+		requestBytes = make([]byte, 0, 0)
 	}
-	httpRequest, err := http.NewRequest(method, s.addr + uri, bytes.NewReader(reqBytes))
+	httpRequest, err := http.NewRequest(method, s.addr + uri, bytes.NewReader(requestBytes))
 	if err != nil {
 		return nil, err
 	}
@@ -41,40 +43,65 @@ func (s *httpServer) Do(method string, uri string, reqBytes []byte) ([]byte, err
 	return bodyBuffer.Bytes(), nil
 }
 
+type stubServer struct {
+	requestJson string
+	responseFile string
+}
+
+func (s *stubServer) Do(method string, uri string, requestBytes []byte) ([]byte, error) {
+	s.requestJson = string(requestBytes)
+	
+	
+	path := filepath.Join(
+		".", 
+		"test_responses", 
+		strings.ToLower(method), 
+		strings.ToLower(strings.Replace(uri, "/api", "", 1)))
+	fileBytes, err := ioutil.ReadFile(path + ".json")
+	if err != nil {
+		return nil, err
+	}
+	return fileBytes, nil
+}
+
 type client struct {
 	conn server
 }
 
 func NewHttpClient(addr string) *client {
-	return &client{conn: &httpServer{addr}}
+	return &client{conn: &httpServer{addr: addr}}
 }
 
-func (c *client) Get(uri string, resObj interface{}) (error) {
-	return c.Send("GET", uri, nil, resObj)
+func NewStubClient(responseFile string) *client {
+	return &client{conn: &stubServer{responseFile: responseFile}}
 }
 
-func (c *client) Send(method string, uri string, reqObj interface{}, resObj interface{}) (error) {
+func (c *client) Get(uri string, responseObj interface{}) (error) {
+	return c.Send("GET", uri, nil, responseObj)
+}
+
+func (c *client) Send(method string, uri string, requestObj interface{}, responseObj interface{}) (error) {
 	// TODO: check if uri starts with /
 	
 	// Convert object to json
-	var reqBytes []byte
+	var requestBytes []byte
 	var err error
-	if reqObj != nil && reqObj != "" {
-		reqBytes, err = json.Marshal(reqObj)
+	if requestObj != nil {
+		requestBytes, err = json.Marshal(requestObj)
 		if err != nil {
 			return err
 		}
 	}
 	
 	// Perform http request
-	resBytes, err := c.conn.Do(method, uri, reqBytes)
+	resBytes, err := c.conn.Do(method, uri, requestBytes)
 	if err != nil {
 		return err
 	}
 	
 	// Parse response json to object
 	decoder := json.NewDecoder(bytes.NewReader(resBytes))
-	err = decoder.Decode(resObj)
+	err = decoder.Decode(responseObj)
 	if err != nil {
 		
 		// Parse the error response
