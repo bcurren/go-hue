@@ -8,28 +8,19 @@ import (
 	"fmt"
 )
 
-type client interface {
-	Do(method string, uri string, reqObj interface{}, resObj interface{}) error
-	Get(uri string, resObj interface{}) error
+type server interface {
+	Do(method string, uri string, reqBytes []byte) ([]byte, error)
 }
 
-type httpClient struct {
+type httpServer struct {
 	addr string
 }
 
-func NewHttpClient(addr string) *httpClient {
-	return &httpClient{addr}
-}
-
-func (c *httpClient) Get(uri string, resObj interface{}) (error) {
-	return c.Send("GET", uri, nil, resObj)
-}
-
-func (c *httpClient) Do(method string, uri string, reqBytes []byte) ([]byte, error) {
+func (s *httpServer) Do(method string, uri string, reqBytes []byte) ([]byte, error) {
 	if reqBytes == nil {
 		reqBytes = make([]byte, 0, 0)
 	}
-	httpRequest, err := http.NewRequest(method, c.addr + uri, bytes.NewReader(reqBytes))
+	httpRequest, err := http.NewRequest(method, s.addr + uri, bytes.NewReader(reqBytes))
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +41,19 @@ func (c *httpClient) Do(method string, uri string, reqBytes []byte) ([]byte, err
 	return bodyBuffer.Bytes(), nil
 }
 
-func (c *httpClient) Send(method string, uri string, reqObj interface{}, resObj interface{}) (error) {
+type client struct {
+	conn server
+}
+
+func NewHttpClient(addr string) *client {
+	return &client{conn: &httpServer{addr}}
+}
+
+func (c *client) Get(uri string, resObj interface{}) (error) {
+	return c.Send("GET", uri, nil, resObj)
+}
+
+func (c *client) Send(method string, uri string, reqObj interface{}, resObj interface{}) (error) {
 	// TODO: check if uri starts with /
 	
 	// Convert object to json
@@ -64,7 +67,7 @@ func (c *httpClient) Send(method string, uri string, reqObj interface{}, resObj 
 	}
 	
 	// Perform http request
-	resBytes, err := c.Do(method, uri, reqBytes)
+	resBytes, err := c.conn.Do(method, uri, reqBytes)
 	if err != nil {
 		return err
 	}
