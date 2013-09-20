@@ -21,15 +21,15 @@ type Light struct {
 func (u *User) GetLights() ([]Light, error) {
 	url := fmt.Sprintf("/api/%s/lights", u.Username)
 
-	var lightsMap map[string]map[string]string
+	var lightsMap map[string]interface{}
 	err := u.Bridge.client.Get(url, &lightsMap)
 	if err != nil {
 		return nil, err
 	}
 
-	lights := make([]Light, 0, 10)
-	for lightId, lightMap := range lightsMap {
-		lights = append(lights, Light{Id: lightId, Name: lightMap["name"]})
+	lights, err := parseLights(lightsMap)
+	if err != nil {
+		return nil, err
 	}
 
 	return lights, nil
@@ -38,13 +38,13 @@ func (u *User) GetLights() ([]Light, error) {
 func (u *User) GetNewLights() ([]Light, time.Time, error) {
 	url := fmt.Sprintf("/api/%s/lights/new", u.Username)
 
-	var newLightsResponse map[string]interface{}
-	err := u.Bridge.client.Get(url, &newLightsResponse)
+	var lightsMap map[string]interface{}
+	err := u.Bridge.client.Get(url, &lightsMap)
 	if err != nil {
 		return nil, time.Time{}, err
 	}
 
-	lastScanString, ok := newLightsResponse["lastscan"].(string)
+	lastScanString, ok := lightsMap["lastscan"].(string)
 	if !ok {
 		return nil, time.Time{}, errors.New("Error parsing lastscan")
 	}
@@ -52,9 +52,9 @@ func (u *User) GetNewLights() ([]Light, time.Time, error) {
 	if err != nil {
 		return nil, time.Time{}, err
 	}
-	delete(newLightsResponse, "lastscan")
+	delete(lightsMap, "lastscan")
 	
-	lights, err := parseLights(newLightsResponse)
+	lights, err := parseLights(lightsMap)
 	if err != nil {
 		return nil, time.Time{}, err
 	}
@@ -62,19 +62,25 @@ func (u *User) GetNewLights() ([]Light, time.Time, error) {
 	return lights, lastScan, nil
 }
 
-func parseLights(newLightsResponse map[string]interface{}) ([]Light, error) {
+func parseLights(lightsMap map[string]interface{}) ([]Light, error) {
 	lights := make([]Light, 0, 10)
 	
-	for lightId, lightInterface := range newLightsResponse {
+	for lightId, lightInterface := range lightsMap {
 		lightMap, ok := lightInterface.(map[string]interface{})
 		if !ok {
-			// return nil, newParseError(reflect.TypeOf(map[string]interface{}), lightInterface, "lights map")
-			return nil, newParseError()
+			return nil, &ApiParseError{
+				Expected: "map[string]interface{}",
+				Actual: lightInterface,
+				Context: "lights map",
+			}
 		}
 		name, ok := lightMap["name"].(string)
 		if !ok {
-			// return nil, newParseError(string, lightMap["name"], "light name")
-			return nil, newParseError()
+			return nil, &ApiParseError{
+				Expected: "string",
+				Actual: lightMap["name"],
+				Context: "lights name",
+			}
 		}
 		lights = append(lights, Light{Id: lightId, Name: name})
 	}
@@ -82,7 +88,13 @@ func parseLights(newLightsResponse map[string]interface{}) ([]Light, error) {
 	return lights, nil
 }
 
-// func newParseError(expected reflect.Type, actual interface{}, context string) error {
-func newParseError() error {
-	return errors.New("Error parsing api response.")
+type ApiParseError struct {
+	Expected string
+	Actual interface{}
+	Context string
+}
+
+func (e *ApiParseError) Error() string {
+	return fmt.Sprintf("Parsing error: expected type '%s' but received '%T' for %s.", 
+		e.Expected, e.Actual, e.Context)
 }
