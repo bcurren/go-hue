@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
-	"strings"
 )
 
 type server interface {
@@ -53,13 +52,7 @@ func (s *stubServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 	s.uri = uri
 	s.method = method
 
-	var path string
-	if s.responseFile == "" {
-		path = filepath.Join(".", "test_responses", strings.ToLower(method), strings.Replace(uri, "/api", "", 1))
-		path = path + ".json"
-	} else {
-		path = filepath.Join(".", "test_responses", s.responseFile)
-	}
+	path := filepath.Join(".", "test_responses", s.responseFile)
 
 	fileBytes, err := ioutil.ReadFile(path)
 	if err != nil {

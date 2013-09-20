@@ -5,7 +5,7 @@ import (
 )
 
 func Test_GetWhenSuccess(t *testing.T) {
-	c := NewStubClient("")
+	c := NewStubClient("get/username1/lights.json")
 
 	var lights map[string]map[string]string
 	err := c.Get("/api/username1/lights", &lights)
