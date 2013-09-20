@@ -1,6 +1,6 @@
 package hue
 
 type Bridge struct {
-	Name string
+	Name   string
 	client client
 }
