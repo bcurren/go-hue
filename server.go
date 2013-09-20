@@ -43,8 +43,8 @@ func (s *httpServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 
 type stubServer struct {
 	requestJson  string
-	uri string
-	method string
+	uri          string
+	method       string
 	responseFile string
 }
 
@@ -52,7 +52,7 @@ func (s *stubServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 	s.requestJson = string(requestBytes)
 	s.uri = uri
 	s.method = method
-	
+
 	var path string
 	if s.responseFile == "" {
 		path = filepath.Join(".", "test_responses", strings.ToLower(method), strings.Replace(uri, "/api", "", 1))

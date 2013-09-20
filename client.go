@@ -45,14 +45,14 @@ func (c *client) Send(method string, uri string, requestObj interface{}, respons
 func encode(requestObj interface{}) ([]byte, error) {
 	var requestBytes []byte
 	var err error
-	
+
 	if requestObj != nil {
 		requestBytes, err = json.Marshal(requestObj)
 		if err != nil {
 			return nil, err
 		}
 	}
-	
+
 	return requestBytes, nil
 }
 
@@ -75,7 +75,7 @@ func decodeApiError(resultBytes []byte) error {
 	for _, apiErrorDetail := range apiErrorDetails {
 		apiError.Errors = append(apiError.Errors, *apiErrorDetail["error"])
 	}
-	
+
 	return apiError
 }
 

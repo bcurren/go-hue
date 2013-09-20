@@ -1,10 +1,11 @@
 package hue
-// 
+
+//
 // func FindBridges() ([]Bridge, error) {
 // }
-// 
-// 
-// 
+//
+//
+//
 // bridges, err := hue.FindBridges()
 // if err != nil {
 // 	return
@@ -18,11 +19,11 @@ package hue
 // if err != nil {
 // 	return
 // }
-// 
+//
 // type jsonConn interface {
 // 	Send(method string, map[string]interface{}) (map[string]interface{} error)
 // }
-// 
+//
 // // Configuration
 // type Bridge struct {
 // 	BridgeAddr *net.TCPAddr
@@ -32,7 +33,7 @@ package hue
 // 	Bridge Bridge
 // 	Username string
 // }
-// 
+//
 // type Configuration struct {
 // 	proxyport uint16
 // 	utc string
@@ -81,13 +82,13 @@ package hue
 // 	SoftwareVersion string
 // 	Pointsymbol object // reserved for future use
 // }
-// 
+//
 // CreateUser(deviceType, username *optional*) (*User, error)
 // (u *User) GetConfiguration() (*Configuration, error)
 // (u *User) UpdateConfiguration(*Configuration) error
 // (u *User) DeleteUser(*User) error
 // (u *User) GetDataStore() (DataStore, error)
-// 
+//
 // // Lights
 // (u *User) GetLights() ([]Light, error)
 // (u *User) GetNewLights() ([]Light, lastScan time.Time, error)
@@ -95,4 +96,4 @@ package hue
 // (u *User) GetLightAttributes(lightId string) (LightAttributes, error)
 // (u *User) SetLightName(lightId string, name string) error
 // (u *User) SetLightState(lightId string, state LightState) []error
-// 
+//

@@ -14,26 +14,26 @@ func Test_GetWhenSuccess(t *testing.T) {
 	}
 
 	assertEqual(t, 2, len(lights), "Num lights returned.")
-	
+
 	assertNotNil(t, lights["1"], "lights[1]")
 	assertEqual(t, "Bedroom", lights["1"]["name"], `lights["1"]["name"]`)
-	
+
 	assertNotNil(t, lights["2"], "lights[2]")
 	assertEqual(t, "Kitchen", lights["2"]["name"], `lights["2"]["name"]`)
 }
 
 func Test_GetWhenError(t *testing.T) {
 	c := NewStubClient("errors/unauthorized_user.json")
-	
+
 	var lights map[string]map[string]string
 	err := c.Get("/api/username1/lights", &lights)
 	apiError, ok := err.(*ApiError)
 	if !ok {
 		t.Fatal("Should return an unauthorized user error.")
 	}
-	
+
 	assertEqual(t, 1, len(apiError.Errors), "Num errors returned.")
-	
+
 	assertEqual(t, 1, apiError.Errors[0].Type, "error.Type")
 	assertEqual(t, "/lights", apiError.Errors[0].Address, "error.Address")
 	assertEqual(t, "unauthorized user", apiError.Errors[0].Description, "error.Description")
