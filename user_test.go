@@ -3,6 +3,7 @@ package hue
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func NewStubUser(stubFilename string, username string) (*User, *stubServer) {
@@ -34,4 +35,27 @@ func Test_GetLights(t *testing.T) {
 
 	assertEqual(t, "2", lights[1].Id, "lights[1].Id")
 	assertEqual(t, "Kitchen", lights[1].Name, "lights[1].Name")
+}
+
+func Test_GetNewLights(t *testing.T) {
+	user, stubServer := NewStubUser("get/username1/lights/new.json", "username1")
+
+	lights, lastScan, err := user.GetNewLights()
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	expectatedLastScan, err := time.Parse(ISO8601, "2012-10-29T12:00:00")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertEqual(t, expectatedLastScan, lastScan, "lastScan")
+	
+	assertEqual(t, "GET", stubServer.method, "method is get")
+	assertEqual(t, fmt.Sprintf("/api/%s/lights/new", user.Username), stubServer.uri, "uri is correct")
+
+	assertEqual(t, 1, len(lights), "len(lights)")
+
+	assertEqual(t, "7", lights[0].Id, "lights[0].Id")
+	assertEqual(t, "Hue Lamp 7", lights[0].Name, "lights[0].Name")
 }

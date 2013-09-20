@@ -2,7 +2,11 @@ package hue
 
 import (
 	"fmt"
+	"time"
+	"errors"
 )
+
+const ISO8601 = "2006-01-02T15:04:05"
 
 type User struct {
 	Bridge   *Bridge
@@ -29,4 +33,39 @@ func (u *User) GetLights() ([]Light, error) {
 	}
 
 	return lights, nil
+}
+
+func (u *User) GetNewLights() ([]Light, time.Time, error) {
+	url := fmt.Sprintf("/api/%s/lights/new", u.Username)
+
+	var newLightsResponse map[string]interface{}
+	err := u.Bridge.client.Get(url, &newLightsResponse)
+	if err != nil {
+		return nil, time.Time{}, err
+	}
+
+	lastScanString, ok := newLightsResponse["lastscan"].(string)
+	if !ok {
+		return nil, time.Time{}, errors.New("Error parsing lastscan")
+	}
+	lastScan, err := time.Parse(ISO8601, lastScanString)
+	if err != nil {
+		return nil, time.Time{}, err
+	}
+	delete(newLightsResponse, "lastscan")
+	
+	lights := make([]Light, 0, 10)
+	for lightId, lightInterface := range newLightsResponse {
+		lightMap, ok := lightInterface.(map[string]interface{})
+		if !ok {
+			return nil, time.Time{}, errors.New("Error casting light interface")
+		}
+		name, ok := lightMap["name"].(string)
+		if !ok {
+			return nil, time.Time{}, errors.New("Error casting light interface")
+		}
+		lights = append(lights, Light{Id: lightId, Name: name})
+	}
+
+	return lights, lastScan, nil
 }
