@@ -1,7 +1,6 @@
 package hue
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -10,13 +9,27 @@ func Test_jsonConn(t *testing.T) {
 
 	var lights map[string]map[string]string
 	err := c.Get("/api/username1/lights", &lights)
-	// err := c.Get("/api/f8946c33ae3512f1abeefbb23bf5ca7/lights", &lights)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
-	m := lights
-	for k, v := range m {
-		fmt.Printf("%s -> %s\n", k, v["name"])
+	assertEqual(t, 2, len(lights), "Num lights returned.")
+	
+	assertNotNil(t, lights["1"], "lights[1]")
+	assertEqual(t, "Bedroom", lights["1"]["name"], `lights["1"]["name"]`)
+	
+	assertNotNil(t, lights["2"], "lights[2]")
+	assertEqual(t, "Kitchen", lights["2"]["name"], `lights["2"]["name"]`)
+}
+
+func assertEqual(t *testing.T, expected interface{}, actual interface{}, errorMessage string) {
+	if expected != actual {
+		t.Errorf("%q is not equal to %q. %q", expected, actual, errorMessage)
+	}
+}
+
+func assertNotNil(t *testing.T, obj interface{}, errorMessage string) {
+	if obj == nil {
+		t.Errorf("%q should not be nil. %q", obj, errorMessage)
 	}
 }
