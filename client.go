@@ -23,6 +23,10 @@ func (c *client) Get(uri string, responseObj interface{}) error {
 	return c.Send("GET", uri, nil, responseObj)
 }
 
+func (c *client) Post(uri string, requestObj interface{}, responseObj interface{}) error {
+	return c.Send("POST", uri, requestObj, responseObj)
+}
+
 func (c *client) Send(method string, uri string, requestObj interface{}, responseObj interface{}) error {
 	requestBytes, err := encode(requestObj)
 	if err != nil {
@@ -33,7 +37,7 @@ func (c *client) Send(method string, uri string, requestObj interface{}, respons
 	if err != nil {
 		return err
 	}
-
+	
 	err = decode(resultBytes, responseObj)
 	if err != nil {
 		return decodeApiError(resultBytes)
@@ -57,6 +61,10 @@ func encode(requestObj interface{}) ([]byte, error) {
 }
 
 func decode(resultBytes []byte, responseObj interface{}) error {
+	if responseObj == nil {
+		return nil
+	}
+	
 	decoder := json.NewDecoder(bytes.NewReader(resultBytes))
 	return decoder.Decode(responseObj)
 }

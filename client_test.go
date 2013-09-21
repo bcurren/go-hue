@@ -4,11 +4,11 @@ import (
 	"testing"
 )
 
-func Test_GetWhenSuccess(t *testing.T) {
+func Test_SendWhenNoRequestBodyAndSuccess(t *testing.T) {
 	c := NewStubClient("get/username1/lights.json")
 
 	var lights map[string]map[string]string
-	err := c.Get("/api/username1/lights", &lights)
+	err := c.Send("GET", "/api/username1/lights", nil, &lights)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -22,11 +22,11 @@ func Test_GetWhenSuccess(t *testing.T) {
 	assertEqual(t, "Kitchen", lights["2"]["name"], `lights["2"]["name"]`)
 }
 
-func Test_GetWhenError(t *testing.T) {
+func Test_SendWhenError(t *testing.T) {
 	c := NewStubClient("errors/unauthorized_user.json")
 
 	var lights map[string]map[string]string
-	err := c.Get("/api/username1/lights", &lights)
+	err := c.Send("GET", "/api/username1/lights", nil, &lights)
 	apiError, ok := err.(*ApiError)
 	if !ok {
 		t.Fatal("Should return an unauthorized user error.")

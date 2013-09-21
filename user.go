@@ -61,6 +61,17 @@ func (u *User) GetNewLights() ([]Light, time.Time, error) {
 	return lights, lastScan, nil
 }
 
+func (u *User) SearchForNewLights() error {
+	url := fmt.Sprintf("/api/%s/lights", u.Username)
+	
+	err := u.Bridge.client.Post(url, nil, nil)
+	if err != nil {
+		return err
+	}
+	
+	return nil
+}
+
 func parseLights(lightsMap map[string]interface{}) ([]Light, error) {
 	lights := make([]Light, 0, 10)
 

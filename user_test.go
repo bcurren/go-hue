@@ -60,6 +60,18 @@ func Test_GetNewLights(t *testing.T) {
 	assertEqual(t, "Hue Lamp 7", lights[0].Name, "lights[0].Name")
 }
 
+func Test_SearchForNewLights(t *testing.T) {
+	user, stubServer := NewStubUser("post/username1/lights.json", "username1")
+
+	err := user.SearchForNewLights()
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	assertEqual(t, "POST", stubServer.method, "method is post")
+	assertEqual(t, fmt.Sprintf("/api/%s/lights", user.Username), stubServer.uri, "uri is correct")
+}
+
 func Test_ApiParseErrorString(t *testing.T) {
 	err := NewApiError("string", 1, "user count")
 	assertEqual(t, "Parsing error: expected type 'string' but received 'int' for user count.",
