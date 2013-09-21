@@ -39,6 +39,44 @@ func Test_SendWhenError(t *testing.T) {
 	assertEqual(t, "unauthorized user", apiError.Errors[0].Description, "error.Description")
 }
 
+func Test_SendSuccessWhenResponseIsNil(t *testing.T) {
+	c := NewStubClient("post/username1/lights.json")
+
+	err := c.Send("POST", "/api/username1/lights", nil, nil)
+	if err != nil {
+		t.Fatal("Should be successful.")
+	}
+}
+
+func Test_SendErrorWhenResponseIsNil(t *testing.T) {
+	c := NewStubClient("errors/unauthorized_user.json")
+
+	err := c.Send("POST", "/api/username1/lights", nil, nil)
+	if _, ok := err.(*ApiError); !ok {
+		t.Fatal("Should return an api error.")
+	}
+}
+
+func Test_SendSuccessWhenReponseMatchesErrorStruct(t *testing.T) {
+	c := NewStubClient("post/username1/lights.json")
+
+	var responseObj []map[string]map[string]string
+	err := c.Send("POST", "/api/username1/lights", nil, &responseObj)
+	if err != nil {
+		t.Fatal("Should be successful.")
+	}
+}
+
+func Test_SendErrorWhenReponseMatchesErrorStruct(t *testing.T) {
+	c := NewStubClient("errors/unauthorized_user.json")
+
+	var responseObj []map[string]map[string]string
+	err := c.Send("POST", "/api/username1/lights", nil, &responseObj)
+	if _, ok := err.(*ApiError); !ok {
+		t.Fatal("Should return an api error.")
+	}
+}
+
 func assertEqual(t *testing.T, expected interface{}, actual interface{}, errorMessage string) {
 	if expected != actual {
 		t.Errorf("%q is not equal to %q. %q", expected, actual, errorMessage)

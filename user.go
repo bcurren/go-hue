@@ -63,12 +63,12 @@ func (u *User) GetNewLights() ([]Light, time.Time, error) {
 
 func (u *User) SearchForNewLights() error {
 	url := fmt.Sprintf("/api/%s/lights", u.Username)
-	
+
 	err := u.Bridge.client.Post(url, nil, nil)
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 

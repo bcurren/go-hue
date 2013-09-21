@@ -37,7 +37,13 @@ func (c *client) Send(method string, uri string, requestObj interface{}, respons
 	if err != nil {
 		return err
 	}
-	
+
+	// If response object is nil, use default response to ensure response is not an error
+	if responseObj == nil {
+		var defaultResponse []map[string]map[string]string
+		responseObj = &defaultResponse
+	}
+
 	err = decode(resultBytes, responseObj)
 	if err != nil {
 		return decodeApiError(resultBytes)
@@ -61,10 +67,6 @@ func encode(requestObj interface{}) ([]byte, error) {
 }
 
 func decode(resultBytes []byte, responseObj interface{}) error {
-	if responseObj == nil {
-		return nil
-	}
-	
 	decoder := json.NewDecoder(bytes.NewReader(resultBytes))
 	return decoder.Decode(responseObj)
 }

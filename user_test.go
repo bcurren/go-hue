@@ -67,7 +67,7 @@ func Test_SearchForNewLights(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	assertEqual(t, "POST", stubServer.method, "method is post")
 	assertEqual(t, fmt.Sprintf("/api/%s/lights", user.Username), stubServer.uri, "uri is correct")
 }
