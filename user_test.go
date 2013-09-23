@@ -10,7 +10,7 @@ func Test_NewUser(t *testing.T) {
 	if !ok {
 		t.Fatal("User doesn't have an httpServer set up.")
 	}
-	
+
 	assertEqual(t, "myUsername", user.Username, "user.Username")
 	assertEqual(t, "10.4.5.2", httpServer.addr, "httpServer.addr")
 }

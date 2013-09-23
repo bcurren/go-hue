@@ -10,7 +10,7 @@ func Test_NewHttpClient(t *testing.T) {
 	if !ok {
 		t.Fatal("Client doesn't have an httpServer")
 	}
-	
+
 	assertEqual(t, "192.168.10.2", httpServer.addr, "httpServer.addr")
 }
 

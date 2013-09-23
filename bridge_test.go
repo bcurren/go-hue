@@ -10,7 +10,7 @@ func Test_NewBridge(t *testing.T) {
 	if !ok {
 		t.Fatal("Didn't create an httpServer properly.")
 	}
-	
+
 	assertEqual(t, "192.168.0.1", httpServer.addr, "httpServer.addr")
 }
 
