@@ -105,10 +105,17 @@ func (u *User) GetLightAttributes(lightId string) (*LightAttributes, error) {
 	}
 
 	return lightAttributes, nil
-
 }
 
 func (u *User) SetLightName(lightId string, name string) error {
+	url := fmt.Sprintf("/api/%s/lights/%s", u.Username, lightId)
+
+	request := map[string]string{"name": name}
+	err := u.Bridge.client.Put(url, &request, nil)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

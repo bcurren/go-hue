@@ -27,6 +27,10 @@ func (c *client) Post(uri string, requestObj interface{}, responseObj interface{
 	return c.Send("POST", uri, requestObj, responseObj)
 }
 
+func (c *client) Put(uri string, requestObj interface{}, responseObj interface{}) error {
+	return c.Send("PUT", uri, requestObj, responseObj)
+}
+
 func (c *client) Send(method string, uri string, requestObj interface{}, responseObj interface{}) error {
 	requestBytes, err := encode(requestObj)
 	if err != nil {

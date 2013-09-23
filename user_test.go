@@ -113,6 +113,19 @@ func Test_GetLightAttributes(t *testing.T) {
 	assertEqual(t, true, lightState.Reachable, "Reachable")
 }
 
+func Test_SetLightName(t *testing.T) {
+	user, stubServer := NewStubUser("put/username1/lights/light1.json", "username1")
+
+	err := user.SetLightName("light1", "Basement Light")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqual(t, "PUT", stubServer.method, "method is put")
+	assertEqual(t, "/api/username1/lights/light1", stubServer.uri, "request uri")
+	assertEqual(t, `{"name":"Basement Light"}`, stubServer.requestJson, "request json")
+}
+
 func Test_ApiParseErrorString(t *testing.T) {
 	err := NewApiError("string", 1, "user count")
 	assertEqual(t, "Parsing error: expected type 'string' but received 'int' for user count.",
