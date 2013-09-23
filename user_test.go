@@ -79,14 +79,15 @@ func Test_GetLightAttributes(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Request parameters
 	assertEqual(t, "GET", stubServer.method, "method is get")
 	assertEqual(t, "/api/username1/lights/light1", stubServer.uri, "request uri")
 
+	// Light attributes
 	assertEqual(t, "LC 1", lightAttributes.Name, "Name")
 	assertEqual(t, "Living Colors", lightAttributes.Type, "Type")
 	assertEqual(t, "LC0015", lightAttributes.ModelId, "ModelId")
 	assertEqual(t, "1.0.3", lightAttributes.SoftwareVersion, "SoftwareVersion")
-
 	pointSymbol := lightAttributes.PointSymbol.(map[string]interface{})
 	assertEqual(t, "none", pointSymbol["1"].(string), "pointSymbol['1']")
 	assertEqual(t, "none", pointSymbol["2"].(string), "pointSymbol['2']")
@@ -97,6 +98,7 @@ func Test_GetLightAttributes(t *testing.T) {
 	assertEqual(t, "none", pointSymbol["7"].(string), "pointSymbol['7']")
 	assertEqual(t, "none", pointSymbol["8"].(string), "pointSymbol['8']")
 
+	// Light state
 	lightState := lightAttributes.State
 	assertEqual(t, true, *lightState.On, "On")
 	assertEqual(t, uint8(200), *lightState.Brightness, "Brightness")
