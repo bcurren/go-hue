@@ -1,9 +1,5 @@
 package hue
 
-func (b *Bridge) CreateUser(deviceType, decodedUsername string) (*User, error) {
-	return nil, nil
-}
-
 // TODO Configuration Api Methods:
 // (u *User) GetConfiguration() (*Configuration, error)
 // (u *User) DeleteUser(*User) error
