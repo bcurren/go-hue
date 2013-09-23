@@ -4,6 +4,16 @@ A typesafe, fully tested, go package for the Phillip's Hue client API.
 
 Note: This is a work in project and *NOT* ready to be used in production yet. I'm hoping to have it completed by the end of September 2013 and am actively working on the project.
 
+## Todo
+
+For more information about the following API's see the [Hue Developer API Specification](http://developers.meethue.com/).
+
+[x] Lights API
+[] Configuration API
+[] Discovery API
+[] Groups API
+[] Schedules API
+
 ## Usage
 
 * [Setup your go environment](http://golang.org/doc/code.html)
