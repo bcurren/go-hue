@@ -1,7 +1,6 @@
 package hue
 
 import (
-	"fmt"
 	"testing"
 	"time"
 )
@@ -26,7 +25,7 @@ func Test_GetLights(t *testing.T) {
 	}
 
 	assertEqual(t, "GET", stubServer.method, "method is get")
-	assertEqual(t, fmt.Sprintf("/api/%s/lights", user.Username), stubServer.uri, "uri is correct")
+	assertEqual(t, "/api/username1/lights", stubServer.uri, "request uri")
 
 	assertEqual(t, 2, len(lights), "len(lights)")
 
@@ -52,7 +51,7 @@ func Test_GetNewLights(t *testing.T) {
 	assertEqual(t, expectatedLastScan, lastScan, "lastScan")
 
 	assertEqual(t, "GET", stubServer.method, "method is get")
-	assertEqual(t, fmt.Sprintf("/api/%s/lights/new", user.Username), stubServer.uri, "uri is correct")
+	assertEqual(t, "/api/username1/lights/new", stubServer.uri, "request uri")
 
 	assertEqual(t, 1, len(lights), "len(lights)")
 
@@ -69,7 +68,47 @@ func Test_SearchForNewLights(t *testing.T) {
 	}
 
 	assertEqual(t, "POST", stubServer.method, "method is post")
-	assertEqual(t, fmt.Sprintf("/api/%s/lights", user.Username), stubServer.uri, "uri is correct")
+	assertEqual(t, "/api/username1/lights", stubServer.uri, "request uri")
+}
+
+func Test_GetLightAttributes(t *testing.T) {
+	user, stubServer := NewStubUser("get/username1/lights/light1.json", "username1")
+
+	lightAttributes, err := user.GetLightAttributes("light1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqual(t, "GET", stubServer.method, "method is get")
+	assertEqual(t, "/api/username1/lights/light1", stubServer.uri, "request uri")
+
+	assertEqual(t, "LC 1", lightAttributes.Name, "Name")
+	assertEqual(t, "Living Colors", lightAttributes.Type, "Type")
+	assertEqual(t, "LC0015", lightAttributes.ModelId, "ModelId")
+	assertEqual(t, "1.0.3", lightAttributes.SoftwareVersion, "SoftwareVersion")
+
+	pointSymbol := lightAttributes.PointSymbol.(map[string]interface{})
+	assertEqual(t, "none", pointSymbol["1"].(string), "pointSymbol['1']")
+	assertEqual(t, "none", pointSymbol["2"].(string), "pointSymbol['2']")
+	assertEqual(t, "none", pointSymbol["3"].(string), "pointSymbol['3']")
+	assertEqual(t, "none", pointSymbol["4"].(string), "pointSymbol['4']")
+	assertEqual(t, "none", pointSymbol["5"].(string), "pointSymbol['5']")
+	assertEqual(t, "none", pointSymbol["6"].(string), "pointSymbol['6']")
+	assertEqual(t, "none", pointSymbol["7"].(string), "pointSymbol['7']")
+	assertEqual(t, "none", pointSymbol["8"].(string), "pointSymbol['8']")
+
+	lightState := lightAttributes.State
+	assertEqual(t, true, *lightState.On, "On")
+	assertEqual(t, uint8(200), *lightState.Brightness, "Brightness")
+	assertEqual(t, uint16(50000), *lightState.Hue, "Hue")
+	assertEqual(t, uint8(200), *lightState.Saturation, "Saturation")
+	assertEqual(t, 0.5, lightState.Xy[0], "Xy")
+	assertEqual(t, 0.25, lightState.Xy[1], "Xy")
+	assertEqual(t, uint16(500), *lightState.ColorTemp, "ColorTemp")
+	assertEqual(t, "none", lightState.Alert, "Alert")
+	assertEqual(t, "none", lightState.Effect, "Effect")
+	assertEqual(t, "hs", lightState.ColorMode, "ColorMode")
+	assertEqual(t, true, lightState.Reachable, "Reachable")
 }
 
 func Test_ApiParseErrorString(t *testing.T) {

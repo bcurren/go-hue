@@ -1,0 +1,28 @@
+{
+	"state": {
+		"on": true,
+		"bri": 200,
+		"hue": 50000,
+		"sat": 200,
+		"xy": [0.5, 0.25],
+		"ct": 500,
+		"alert": "none",
+		"effect": "none",
+		"colormode": "hs",
+		"reachable": true
+	},
+	"type": "Living Colors",
+	"name": "LC 1",
+	"modelid": "LC0015",
+	"swversion": "1.0.3",
+	"pointsymbol": {
+		"1": "none",
+		"2": "none",
+		"3": "none",
+		"4": "none",
+		"5": "none",
+		"6": "none",
+		"7": "none",
+		"8": "none"
+	}
+}

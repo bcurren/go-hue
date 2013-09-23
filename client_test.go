@@ -1,6 +1,7 @@
 package hue
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -78,6 +79,10 @@ func Test_SendErrorWhenReponseMatchesErrorStruct(t *testing.T) {
 }
 
 func assertEqual(t *testing.T, expected interface{}, actual interface{}, errorMessage string) {
+	if reflect.TypeOf(expected) != reflect.TypeOf(actual) {
+		t.Errorf("Received 'expected' of type %T and 'actual' of type %T. %q", expected, actual, errorMessage)
+		return
+	}
 	if expected != actual {
 		t.Errorf("%q is not equal to %q. %q", expected, actual, errorMessage)
 	}

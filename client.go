@@ -103,9 +103,9 @@ func (e ApiError) Error() string {
 }
 
 type ApiErrorDetail struct {
-	Type        int    `json:type`
-	Address     string `json:address`
-	Description string `json:description`
+	Type        int    `json:"type"`
+	Address     string `json:"address"`
+	Description string `json:"description"`
 }
 
 func (e ApiErrorDetail) Error() string {
