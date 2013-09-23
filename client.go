@@ -27,7 +27,11 @@ func (c *client) Get(uri string, responseObj interface{}) error {
 
 	err = decode(resultBytes, responseObj)
 	if err != nil {
-		return decodeApiError(resultBytes)
+		_, errors, err := decodeApiResult(resultBytes)
+		if err != nil {
+			return err
+		}
+		return &ApiError{errors}
 	}
 
 	return nil
@@ -52,13 +56,26 @@ func (c *client) Send(method string, uri string, requestObj interface{}) ([]ApiS
 		return nil, err
 	}
 
-	var responseObj []*APIResult
-
-	err = decode(resultBytes, &responseObj)
+	successes, errors, err := decodeApiResult(resultBytes)
 	if err != nil {
 		return nil, err
 	}
+	if len(errors) != 0 {
+		return successes, &ApiError{errors}
+	}
 
+	return successes, nil
+}
+
+func decodeApiResult(resultBytes []byte) ([]ApiSuccessDetail, []ApiErrorDetail, error) {
+	// Decode api result
+	var responseObj []*APIResult
+	err := decode(resultBytes, &responseObj)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Create slice of successes and errors
 	successes := make([]ApiSuccessDetail, 0, 5)
 	errors := make([]ApiErrorDetail, 0, 5)
 	for _, result := range responseObj {
@@ -70,15 +87,15 @@ func (c *client) Send(method string, uri string, requestObj interface{}) ([]ApiS
 		}
 	}
 
+	// Set slice to nil if empty
 	if len(successes) == 0 {
 		successes = nil
 	}
-	if len(errors) != 0 {
-		return successes, &ApiError{errors}
+	if len(errors) == 0 {
 		errors = nil
 	}
 
-	return successes, nil
+	return successes, errors, nil
 }
 
 func encode(requestObj interface{}) ([]byte, error) {
