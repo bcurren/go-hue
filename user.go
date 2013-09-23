@@ -9,6 +9,10 @@ type User struct {
 	Username string
 }
 
+func NewUser(username, addr string) *User {
+	return &User{Username: username, Bridge: NewBridge(addr)}
+}
+
 type ApiParseError struct {
 	Expected string
 	Actual   interface{}

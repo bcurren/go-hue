@@ -4,6 +4,16 @@ import (
 	"testing"
 )
 
+func Test_NewBridge(t *testing.T) {
+	bridge := NewBridge("192.168.0.1")
+	httpServer, ok := bridge.client.conn.(*httpServer)
+	if !ok {
+		t.Fatal("Didn't create an httpServer properly.")
+	}
+	
+	assertEqual(t, "192.168.0.1", httpServer.addr, "httpServer.addr")
+}
+
 func Test_CreateUser(t *testing.T) {
 	bridge, stubServer := NewStubBridge("post/index.json")
 

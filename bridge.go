@@ -4,6 +4,11 @@ type Bridge struct {
 	client *client
 }
 
+func NewBridge(addr string) *Bridge {
+	client := NewHttpClient(addr)
+	return &Bridge{client: client}
+}
+
 func (b *Bridge) CreateUser(deviceType, username string) (*User, error) {
 	url := "/api"
 

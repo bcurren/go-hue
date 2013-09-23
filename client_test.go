@@ -4,6 +4,16 @@ import (
 	"testing"
 )
 
+func Test_NewHttpClient(t *testing.T) {
+	client := NewHttpClient("192.168.10.2")
+	httpServer, ok := client.conn.(*httpServer)
+	if !ok {
+		t.Fatal("Client doesn't have an httpServer")
+	}
+	
+	assertEqual(t, "192.168.10.2", httpServer.addr, "httpServer.addr")
+}
+
 func Test_GetWithEmptyRequestBody(t *testing.T) {
 	c := NewStubClient("get/username1/lights.json")
 
