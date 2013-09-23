@@ -26,9 +26,9 @@ type LightState struct {
 	ColorTemp      *uint16   `json:"ct,omitempty"`
 	Alert          string    `json:"alert,omitempty"`
 	Effect         string    `json:"effect,omitempty"`
-	TransitionTime uint16    /* write only */
-	ColorMode      string    `json:"colormode,omitempty"` /* read only */
-	Reachable      bool      `json:"reachable,omitempty"` /* read only */
+	TransitionTime *uint16   `json:"transitiontime,omitempty"` /* write only */
+	ColorMode      string    `json:"colormode,omitempty"`      /* read only */
+	Reachable      bool      `json:"reachable,omitempty"`      /* read only */
 }
 
 type LightAttributes struct {
@@ -87,7 +87,7 @@ func (u *User) GetNewLights() ([]Light, time.Time, error) {
 func (u *User) SearchForNewLights() error {
 	url := fmt.Sprintf("/api/%s/lights", u.Username)
 
-	err := u.Bridge.client.Post(url, nil, nil)
+	_, err := u.Bridge.client.Post(url, nil)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (u *User) SetLightName(lightId string, name string) error {
 	url := fmt.Sprintf("/api/%s/lights/%s", u.Username, lightId)
 
 	request := map[string]string{"name": name}
-	err := u.Bridge.client.Put(url, &request, nil)
+	_, err := u.Bridge.client.Put(url, &request)
 	if err != nil {
 		return err
 	}
@@ -119,7 +119,14 @@ func (u *User) SetLightName(lightId string, name string) error {
 	return nil
 }
 
-func (u *User) SetLightState(lightId string, state *LightState) error {
+func (u *User) SetLightState(lightId string, state LightState) error {
+	url := fmt.Sprintf("/api/%s/lights/%s/state", u.Username, lightId)
+
+	_, err := u.Bridge.client.Put(url, &state)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

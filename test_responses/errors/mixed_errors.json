@@ -1,0 +1,11 @@
+[{
+	"error": {
+		"type": 101,
+		"address": "/fake",
+		"description": "link button not pressed"
+	}
+}, {
+	"success": {
+		"/lights/light1/state/on": true	
+	}
+}]

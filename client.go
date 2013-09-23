@@ -20,32 +20,9 @@ func NewStubClient(responseFile string) *client {
 }
 
 func (c *client) Get(uri string, responseObj interface{}) error {
-	return c.Send("GET", uri, nil, responseObj)
-}
-
-func (c *client) Post(uri string, requestObj interface{}, responseObj interface{}) error {
-	return c.Send("POST", uri, requestObj, responseObj)
-}
-
-func (c *client) Put(uri string, requestObj interface{}, responseObj interface{}) error {
-	return c.Send("PUT", uri, requestObj, responseObj)
-}
-
-func (c *client) Send(method string, uri string, requestObj interface{}, responseObj interface{}) error {
-	requestBytes, err := encode(requestObj)
+	resultBytes, err := c.conn.Do("GET", uri, nil)
 	if err != nil {
 		return err
-	}
-
-	resultBytes, err := c.conn.Do(method, uri, requestBytes)
-	if err != nil {
-		return err
-	}
-
-	// If response object is nil, use default response to ensure response is not an error
-	if responseObj == nil {
-		var defaultResponse []map[string]map[string]string
-		responseObj = &defaultResponse
 	}
 
 	err = decode(resultBytes, responseObj)
@@ -54,6 +31,54 @@ func (c *client) Send(method string, uri string, requestObj interface{}, respons
 	}
 
 	return nil
+}
+
+func (c *client) Post(uri string, requestObj interface{}) ([]ApiSuccessDetail, error) {
+	return c.Send("POST", uri, requestObj)
+}
+
+func (c *client) Put(uri string, requestObj interface{}) ([]ApiSuccessDetail, error) {
+	return c.Send("PUT", uri, requestObj)
+}
+
+func (c *client) Send(method string, uri string, requestObj interface{}) ([]ApiSuccessDetail, error) {
+	requestBytes, err := encode(requestObj)
+	if err != nil {
+		return nil, err
+	}
+
+	resultBytes, err := c.conn.Do(method, uri, requestBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	var responseObj []*APIResult
+
+	err = decode(resultBytes, &responseObj)
+	if err != nil {
+		return nil, err
+	}
+
+	successes := make([]ApiSuccessDetail, 0, 5)
+	errors := make([]ApiErrorDetail, 0, 5)
+	for _, result := range responseObj {
+		if result.Success != nil {
+			successes = append(successes, *result.Success)
+		}
+		if result.Error != nil {
+			errors = append(errors, *result.Error)
+		}
+	}
+
+	if len(successes) == 0 {
+		successes = nil
+	}
+	if len(errors) != 0 {
+		return successes, &ApiError{errors}
+		errors = nil
+	}
+
+	return successes, nil
 }
 
 func encode(requestObj interface{}) ([]byte, error) {
@@ -115,3 +140,10 @@ type ApiErrorDetail struct {
 func (e ApiErrorDetail) Error() string {
 	return fmt.Sprintf("Hue API Error type '%d' with description '%s'.", e.Type, e.Description)
 }
+
+type APIResult struct {
+	Success *ApiSuccessDetail `json:"success"`
+	Error   *ApiErrorDetail   `json:"error"`
+}
+
+type ApiSuccessDetail map[string]interface{}

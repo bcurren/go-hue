@@ -5,11 +5,11 @@ import (
 	"testing"
 )
 
-func Test_SendWhenNoRequestBodyAndSuccess(t *testing.T) {
+func Test_GetWithEmptyRequestBody(t *testing.T) {
 	c := NewStubClient("get/username1/lights.json")
 
 	var lights map[string]map[string]string
-	err := c.Send("GET", "/api/username1/lights", nil, &lights)
+	err := c.Get("/api/username1/lights", &lights)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,11 +23,11 @@ func Test_SendWhenNoRequestBodyAndSuccess(t *testing.T) {
 	assertEqual(t, "Kitchen", lights["2"]["name"], `lights["2"]["name"]`)
 }
 
-func Test_SendWhenError(t *testing.T) {
+func Test_GetWithResponseError(t *testing.T) {
 	c := NewStubClient("errors/unauthorized_user.json")
 
 	var lights map[string]map[string]string
-	err := c.Send("GET", "/api/username1/lights", nil, &lights)
+	err := c.Get("/api/username1/lights", &lights)
 	apiError, ok := err.(*ApiError)
 	if !ok {
 		t.Fatal("Should return an unauthorized user error.")
@@ -40,42 +40,53 @@ func Test_SendWhenError(t *testing.T) {
 	assertEqual(t, "unauthorized user", apiError.Errors[0].Description, "error.Description")
 }
 
-func Test_SendSuccessWhenResponseIsNil(t *testing.T) {
+func Test_SendNonGetAllSuccessResponse(t *testing.T) {
 	c := NewStubClient("post/username1/lights.json")
 
-	err := c.Send("POST", "/api/username1/lights", nil, nil)
+	successes, err := c.Send("POST", "/api/username1/lights", nil)
 	if err != nil {
 		t.Fatal("Should be successful.")
 	}
+
+	assertEqual(t, 1, len(successes), "len(successes)")
+	assertEqual(t, "Searching for new devices", successes[0]["/lights"], "val of /lights")
 }
 
-func Test_SendErrorWhenResponseIsNil(t *testing.T) {
+func Test_SendNonGetAllErrorResponse(t *testing.T) {
 	c := NewStubClient("errors/unauthorized_user.json")
 
-	err := c.Send("POST", "/api/username1/lights", nil, nil)
-	if _, ok := err.(*ApiError); !ok {
-		t.Fatal("Should return an api error.")
+	successes, err := c.Send("POST", "/api/username1/lights", nil)
+	apiError, ok := err.(*ApiError)
+	if !ok {
+		t.Fatal("Error should be ApiError.")
+	}
+
+	errors := apiError.Errors
+	assertEqual(t, 1, len(errors), "len(errors)")
+	assertEqual(t, "/lights", errors[0].Address, "errors[0].Address")
+	assertEqual(t, "unauthorized user", errors[0].Description, "errors[0].Description")
+
+	if successes != nil {
+		t.Error("Success should be nil when 0 are returned")
 	}
 }
 
-func Test_SendSuccessWhenReponseMatchesErrorStruct(t *testing.T) {
-	c := NewStubClient("post/username1/lights.json")
+func Test_SendNonGetMixedSuccessAndErrorResponse(t *testing.T) {
+	c := NewStubClient("errors/mixed_errors.json")
 
-	var responseObj []map[string]map[string]string
-	err := c.Send("POST", "/api/username1/lights", nil, &responseObj)
-	if err != nil {
-		t.Fatal("Should be successful.")
+	successes, err := c.Send("POST", "/api/username1/lights", nil)
+	apiError, ok := err.(*ApiError)
+	if !ok {
+		t.Fatal("Error should be ApiError.")
 	}
-}
 
-func Test_SendErrorWhenReponseMatchesErrorStruct(t *testing.T) {
-	c := NewStubClient("errors/unauthorized_user.json")
+	assertEqual(t, 1, len(successes), "len(successes)")
+	assertEqual(t, true, successes[0]["/lights/light1/state/on"], "val of light on")
 
-	var responseObj []map[string]map[string]string
-	err := c.Send("POST", "/api/username1/lights", nil, &responseObj)
-	if _, ok := err.(*ApiError); !ok {
-		t.Fatal("Should return an api error.")
-	}
+	errors := apiError.Errors
+	assertEqual(t, 1, len(errors), "len(errors)")
+	assertEqual(t, "/fake", errors[0].Address, "errors[0].Address")
+	assertEqual(t, "link button not pressed", errors[0].Description, "errors[0].Description")
 }
 
 func assertEqual(t *testing.T, expected interface{}, actual interface{}, errorMessage string) {
