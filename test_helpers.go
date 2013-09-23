@@ -8,17 +8,17 @@ import (
 )
 
 func NewStubUser(stubFilename string, username string) (*User, *stubServer) {
-	bridge, stubServer := NewStubBridge("StubBridge", stubFilename)
+	bridge, stubServer := NewStubBridge(stubFilename)
 	return &User{Bridge: bridge, Username: username}, stubServer
 }
 
-func NewStubBridge(name, stubFilename string) (*Bridge, *stubServer) {
+func NewStubBridge(stubFilename string) (*Bridge, *stubServer) {
 	stubClient := NewStubClient(stubFilename)
 	stubServer, ok := stubClient.conn.(*stubServer)
 	if !ok {
 		panic("Not using a stub server in tests!")
 	}
-	return &Bridge{Name: name, client: stubClient}, stubServer
+	return &Bridge{client: stubClient}, stubServer
 }
 
 func NewStubClient(responseFile string) *client {

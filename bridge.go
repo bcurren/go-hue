@@ -1,21 +1,20 @@
 package hue
 
 type Bridge struct {
-	Name   string
 	client *client
 }
 
 func (b *Bridge) CreateUser(deviceType, username string) (*User, error) {
 	url := "/api"
-	
+
 	requestObj := map[string]string{
 		"devicetype": deviceType,
-		"username": username,
+		"username":   username,
 	}
 	_, err := b.client.Post(url, &requestObj)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &User{Bridge: b, Username: username}, nil
 }
