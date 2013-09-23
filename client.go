@@ -69,7 +69,7 @@ func (c *client) Send(method string, uri string, requestObj interface{}) ([]ApiS
 
 func decodeApiResult(resultBytes []byte) ([]ApiSuccessDetail, []ApiErrorDetail, error) {
 	// Decode api result
-	var responseObj []*APIResult
+	var responseObj []*ApiResult
 	err := decode(resultBytes, &responseObj)
 	if err != nil {
 		return nil, nil, err
@@ -158,7 +158,7 @@ func (e ApiErrorDetail) Error() string {
 	return fmt.Sprintf("Hue API Error type '%d' with description '%s'.", e.Type, e.Description)
 }
 
-type APIResult struct {
+type ApiResult struct {
 	Success *ApiSuccessDetail `json:"success"`
 	Error   *ApiErrorDetail   `json:"error"`
 }
