@@ -15,10 +15,6 @@ func NewHttpClient(addr string) *client {
 	return &client{conn: &httpServer{addr: addr}}
 }
 
-func NewStubClient(responseFile string) *client {
-	return &client{conn: &stubServer{responseFile: responseFile}}
-}
-
 func (c *client) Get(uri string, responseObj interface{}) error {
 	resultBytes, err := c.conn.Do("GET", uri, nil)
 	if err != nil {

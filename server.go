@@ -2,9 +2,7 @@ package hue
 
 import (
 	"bytes"
-	"io/ioutil"
 	"net/http"
-	"path/filepath"
 )
 
 type server interface {
@@ -38,25 +36,4 @@ func (s *httpServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 	}
 
 	return bodyBuffer.Bytes(), nil
-}
-
-type stubServer struct {
-	requestJson  string
-	uri          string
-	method       string
-	responseFile string
-}
-
-func (s *stubServer) Do(method string, uri string, requestBytes []byte) ([]byte, error) {
-	s.requestJson = string(requestBytes)
-	s.uri = uri
-	s.method = method
-
-	path := filepath.Join(".", "test_responses", s.responseFile)
-
-	fileBytes, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	return fileBytes, nil
 }

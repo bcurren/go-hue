@@ -1,7 +1,6 @@
 package hue
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -87,20 +86,4 @@ func Test_SendNonGetMixedSuccessAndErrorResponse(t *testing.T) {
 	assertEqual(t, 1, len(errors), "len(errors)")
 	assertEqual(t, "/fake", errors[0].Address, "errors[0].Address")
 	assertEqual(t, "link button not pressed", errors[0].Description, "errors[0].Description")
-}
-
-func assertEqual(t *testing.T, expected interface{}, actual interface{}, errorMessage string) {
-	if reflect.TypeOf(expected) != reflect.TypeOf(actual) {
-		t.Errorf("Received 'expected' of type %T and 'actual' of type %T. %q", expected, actual, errorMessage)
-		return
-	}
-	if expected != actual {
-		t.Errorf("%q is not equal to %q. %q", expected, actual, errorMessage)
-	}
-}
-
-func assertNotNil(t *testing.T, obj interface{}, errorMessage string) {
-	if obj == nil {
-		t.Errorf("%q should not be nil. %q", obj, errorMessage)
-	}
 }
