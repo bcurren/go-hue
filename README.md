@@ -11,6 +11,7 @@ For more information about the following API's see the [Hue Developer API Specif
 - [x] Lights API
 - [ ] Configuration API
 - [ ] Discovery API
+- [ ] Documentation
 - [ ] Groups API
 - [ ] Schedules API
 
