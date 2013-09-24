@@ -8,9 +8,9 @@ Note: This is a work in project and *NOT* ready to be used in production yet. I'
 
 For more information about the following API's see the [Hue Developer API Specification](http://developers.meethue.com/).
 
-- [x] Lights API
-- [ ] Configuration API
-- [ ] Discovery API
+- [X] Lights API
+- [~] Configuration API
+- [X] Discovery API
 - [ ] Documentation
 - [ ] Groups API
 - [ ] Schedules API
