@@ -14,10 +14,6 @@ func Test_NewBridge(t *testing.T) {
 	assertEqual(t, "192.168.0.1", httpServer.addr, "httpServer.addr")
 }
 
-func Test_createUniqueHueBridges(t *testing.T) {
-
-}
-
 func Test_CreateUser(t *testing.T) {
 	bridge, stubServer := NewStubBridge("post/index.json")
 
