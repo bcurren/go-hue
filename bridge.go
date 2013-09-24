@@ -21,22 +21,22 @@ func FindBridges() ([]*Bridge, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	hueDevices := reduceToHueDevices(devices)
 	bridges := convertHueDevicesToBridges(hueDevices)
-	
+
 	return bridges, nil
 }
 
 func reduceToHueDevices(devices []ssdp.Device) []ssdp.Device {
 	hueDevices := make([]ssdp.Device, 0, len(devices))
-	
+
 	for _, device := range devices {
 		if device.ModelUrl == HueModelUrl {
 			hueDevices = append(hueDevices, device)
 		}
 	}
-	
+
 	return hueDevices
 }
 
@@ -45,7 +45,7 @@ func convertHueDevicesToBridges(devices []ssdp.Device) []*Bridge {
 	for _, device := range devices {
 		bridges = append(bridges, NewBridge(device.UrlBase))
 	}
-	
+
 	return bridges
 }
 
