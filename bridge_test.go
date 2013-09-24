@@ -2,6 +2,7 @@ package hue
 
 import (
 	"testing"
+	"github.com/bcurren/go-ssdp"
 )
 
 func Test_NewBridge(t *testing.T) {
@@ -12,6 +13,32 @@ func Test_NewBridge(t *testing.T) {
 	}
 
 	assertEqual(t, "192.168.0.1", httpServer.addr, "httpServer.addr")
+}
+
+func Test_reduceToHueDevices(t *testing.T) {
+	devices := make([]ssdp.Device, 2, 2)
+	devices[0].ModelUrl = HueModelUrl
+	devices[1].ModelUrl = "http://someotherdevice.com"
+	
+	hueDevices := reduceToHueDevices(devices)
+	
+	assertEqual(t, 1, len(hueDevices), "len(hueDevices)")
+	assertEqual(t, "http://www.meethue.com", hueDevices[0].ModelUrl, "ModelUrl")
+}
+
+func Test_convertHueDevicesToBridges(t *testing.T) {
+	devices := make([]ssdp.Device, 1, 1)
+	devices[0].UrlBase = "http://192.168.1.10:80/"
+	
+	bridges := convertHueDevicesToBridges(devices)
+	
+	assertEqual(t, 1, len(bridges), "len(bridges)")
+	
+	httpServer, ok :=bridges[0].client.conn.(*httpServer)
+	if !ok {
+		t.Fatal("Bridge doesn't have httpServer.")
+	}
+	assertEqual(t, "http://192.168.1.10:80/", httpServer.addr, "httpServer.addr")
 }
 
 func Test_CreateUser(t *testing.T) {

@@ -1,9 +1,11 @@
 package hue
 
 import (
-// "github.com/bcurren/go-udpn"
-// "time"
+	"github.com/bcurren/go-ssdp"
+	"time"
 )
+
+const HueModelUrl = "http://www.meethue.com"
 
 type Bridge struct {
 	client *client
@@ -14,15 +16,38 @@ func NewBridge(addr string) *Bridge {
 	return &Bridge{client: client}
 }
 
-// TODO: Need to add some functionality to udpn library
-// func FindBridges() ([]*Bridge, error) {
-// 	_, err := udpn.Search("upnp:rootdevice", 3*time.Second)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-//
-// 	return nil, nil
-// }
+func FindBridges() ([]*Bridge, error) {
+	devices, err := ssdp.SearchForDevices("upnp:rootdevice", 3*time.Second)
+	if err != nil {
+		return nil, err
+	}
+	
+	hueDevices := reduceToHueDevices(devices)
+	bridges := convertHueDevicesToBridges(hueDevices)
+	
+	return bridges, nil
+}
+
+func reduceToHueDevices(devices []ssdp.Device) []ssdp.Device {
+	hueDevices := make([]ssdp.Device, 0, len(devices))
+	
+	for _, device := range devices {
+		if device.ModelUrl == HueModelUrl {
+			hueDevices = append(hueDevices, device)
+		}
+	}
+	
+	return hueDevices
+}
+
+func convertHueDevicesToBridges(devices []ssdp.Device) []*Bridge {
+	bridges := make([]*Bridge, 0, len(devices))
+	for _, device := range devices {
+		bridges = append(bridges, NewBridge(device.UrlBase))
+	}
+	
+	return bridges
+}
 
 func (b *Bridge) CreateUser(deviceType, username string) (*User, error) {
 	url := "/api"
