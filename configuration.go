@@ -6,24 +6,29 @@ import (
 
 type Configuration struct {
 	// Read and Write
-	Name         string  `json:"name,omitempty"`
-	ProxyAddress string  `json:"proxyaddress,omitempty"`
-	ProxyPort    *uint16 `json:"proxyport,omitempty"`
-	IpAddress    string  `json:"ipaddress,omitempty"`
-	Netmask      string  `json:"netmask,omitempty"`
-	Gateway      string  `json:"gateway,omitempty"`
-	Dhcp         *bool   `json:"dhcp,omitempty"`
-
-	// These can be updated? Strange
-	SoftwareUpdate interface{} `json:"swupdate,omitempty"`
-	LinkButton     *bool       `json:"linkbutton,omitempty"`
-	PortalServices *bool       `json:"portalservices,omitempty"`
+	Name           string              `json:"name,omitempty"`
+	ProxyAddress   string              `json:"proxyaddress,omitempty"`
+	ProxyPort      *uint16             `json:"proxyport,omitempty"`
+	IpAddress      string              `json:"ipaddress,omitempty"`
+	Netmask        string              `json:"netmask,omitempty"`
+	Gateway        string              `json:"gateway,omitempty"`
+	Dhcp           *bool               `json:"dhcp,omitempty"`
+	PortalServices *bool               `json:"portalservices,omitempty"`
+	LinkButton     *bool               `json:"linkbutton,omitempty"`
+	SoftwareUpdate *SoftwareUpdateInfo `json:"swupdate,omitempty"`
 
 	// Read only
 	Utc             string      `json:"utc,omitempty"`
 	Whitelist       interface{} `json:"whitelist,omitempty"`
 	SoftwareVersion string      `json:"swversion,omitempty"`
 	Mac             string      `json:"mac,omitempty"`
+}
+
+type SoftwareUpdateInfo struct {
+	UpdateState *uint  `json:"updatestate,omitempty"`
+	Url         string `json:"url,omitempty"`
+	Text        string `json:"text,omitempty"`
+	Notify      *bool  `json:"notify,omitempty"`
 }
 
 func (u *User) GetConfiguration() (*Configuration, error) {
@@ -39,7 +44,7 @@ func (u *User) GetConfiguration() (*Configuration, error) {
 }
 
 // TODO Configuration Api Methods:
-// Add struct for SoftwareUpdate and Whitelist
+// Add struct for and Whitelist
 // Provide strong type for times, addresses, etc
 // func (u *User) DeleteUser(*User) error
 // func (u *User) UpdateConfiguration(*Configuration) error

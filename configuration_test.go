@@ -23,7 +23,12 @@ func Test_GetConfiguration(t *testing.T) {
 	assertEqual(t, "192.168.0.1", config.Gateway, "Gateway")
 	assertEqual(t, false, *config.Dhcp, "Dhcp")
 
-	assertNotNil(t, config.SoftwareUpdate, "config.SoftwareUpdate")
+	softwareUpdate := config.SoftwareUpdate
+	assertEqual(t, uint(1), *softwareUpdate.UpdateState, "UpdateState")
+	assertEqual(t, "www.meethue.com/patchnotes/1453", softwareUpdate.Url, "Url")
+	assertEqual(t, "This is a software update", softwareUpdate.Text, "Text")
+	assertEqual(t, false, *softwareUpdate.Notify, "Notify")
+
 	assertEqual(t, false, *config.LinkButton, "LinkButton")
 	assertEqual(t, false, *config.PortalServices, "PortalServices")
 
