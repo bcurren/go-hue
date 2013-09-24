@@ -1,8 +1,8 @@
 package hue
 
 import (
-	"github.com/bcurren/go-udpn"
-	"time"
+	// "github.com/bcurren/go-udpn"
+	// "time"
 )
 
 type Bridge struct {
