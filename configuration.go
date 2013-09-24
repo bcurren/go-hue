@@ -39,6 +39,8 @@ func (u *User) GetConfiguration() (*Configuration, error) {
 }
 
 // TODO Configuration Api Methods:
+// Add struct for SoftwareUpdate and Whitelist
+// Provide strong type for times, addresses, etc
 // func (u *User) DeleteUser(*User) error
 // func (u *User) UpdateConfiguration(*Configuration) error
 // func (u *User) GetDataStore() (DataStore, error)
