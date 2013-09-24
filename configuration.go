@@ -18,10 +18,10 @@ type Configuration struct {
 	SoftwareUpdate *SoftwareUpdateInfo `json:"swupdate,omitempty"`
 
 	// Read only
-	Utc             string      `json:"utc,omitempty"`
-	Whitelist       interface{} `json:"whitelist,omitempty"`
-	SoftwareVersion string      `json:"swversion,omitempty"`
-	Mac             string      `json:"mac,omitempty"`
+	Utc             string                       `json:"utc,omitempty"`
+	Whitelist       map[string]map[string]string `json:"whitelist,omitempty"`
+	SoftwareVersion string                       `json:"swversion,omitempty"`
+	Mac             string                       `json:"mac,omitempty"`
 }
 
 type SoftwareUpdateInfo struct {
