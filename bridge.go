@@ -64,3 +64,23 @@ func (b *Bridge) CreateUser(deviceType, username string) (*User, error) {
 
 	return &User{Bridge: b, Username: username}, nil
 }
+
+func (b *Bridge) IsValidUser(username string) (bool, error) {
+	testUser := NewUserWithBridge(username, b)
+
+	// Get Configuration to determine if valid user
+	_, err := testUser.GetConfiguration()
+	if err != nil {
+		if apiError, ok := err.(*ApiError); ok {
+			for _, apiErrorDetail := range apiError.Errors {
+				if apiErrorDetail.Type == UnauthorizedUserErrorType {
+					return false, nil
+				}
+			}
+		}
+
+		return false, err
+	}
+
+	return true, nil
+}

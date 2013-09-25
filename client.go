@@ -131,6 +131,22 @@ func decodeApiError(resultBytes []byte) error {
 	return apiError
 }
 
+const (
+	UnauthorizedUserErrorType       = 1
+	InvalidJsonErrorType            = 2
+	ResourceNotAvailableErrorType   = 3
+	MethodNotAvailableErrorType     = 4
+	MissingParameterErrorType       = 5
+	ParameterNotAvailableErrorType  = 6
+	InvalidParameterValueErrorType  = 7
+	ParameterNotModifiableErrorType = 8
+	InternalErrorType               = 901
+	LinkButtonNotPressedErrorType   = 101
+	DeviceIsOffErrorType            = 201
+	GroupTableFullErrorType         = 301
+	DeviceGroupTableFullErrorType   = 302
+)
+
 type ApiError struct {
 	Errors []ApiErrorDetail
 }

@@ -10,7 +10,11 @@ type User struct {
 }
 
 func NewUser(username, bridgeId, addr string) *User {
-	return &User{Username: username, Bridge: NewBridge(bridgeId, addr)}
+	return NewUserWithBridge(username, NewBridge(bridgeId, addr))
+}
+
+func NewUserWithBridge(username string, bridge *Bridge) *User {
+	return &User{Username: username, Bridge: bridge}
 }
 
 type ApiParseError struct {

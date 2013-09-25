@@ -59,3 +59,38 @@ func Test_CreateUser(t *testing.T) {
 	assertEqual(t, bridge, user.Bridge, "user.Bridge")
 	assertEqual(t, "myUsername", user.Username, "user.Username")
 }
+
+func Test_IsValidUserReturnsTrue(t *testing.T) {
+	bridge, _ := NewStubBridge("get/username1/config.json")
+
+	isValid, err := bridge.IsValidUser("username1")
+	if err != nil {
+		t.Fatal("Error when determining if is valid user.", err)
+	}
+
+	if !isValid {
+		t.Error("The user should be valid but its not.")
+	}
+}
+
+func Test_IsValidUserReturnsFalse(t *testing.T) {
+	bridge, _ := NewStubBridge("errors/unauthorized_user.json")
+
+	isValid, err := bridge.IsValidUser("invalidusername")
+	if err != nil {
+		t.Fatal("Error when determining if is valid user.")
+	}
+
+	if isValid {
+		t.Error("The user should not be valid but it is.")
+	}
+}
+
+func Test_IsValidUserReturnsError(t *testing.T) {
+	bridge, _ := NewStubBridge("errors/mixed_errors.json")
+
+	_, err := bridge.IsValidUser("invalidusername")
+	if err == nil {
+		t.Fatal("Should return an error.")
+	}
+}
