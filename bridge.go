@@ -8,12 +8,13 @@ import (
 const HueModelUrl = "http://www.meethue.com"
 
 type Bridge struct {
-	client *client
+	UniqueId string
+	client   *client
 }
 
-func NewBridge(addr string) *Bridge {
+func NewBridge(uniqueId, addr string) *Bridge {
 	client := NewHttpClient(addr)
-	return &Bridge{client: client}
+	return &Bridge{UniqueId: uniqueId, client: client}
 }
 
 func FindBridges() ([]*Bridge, error) {
@@ -43,7 +44,7 @@ func reduceToHueDevices(devices []ssdp.Device) []ssdp.Device {
 func convertHueDevicesToBridges(devices []ssdp.Device) []*Bridge {
 	bridges := make([]*Bridge, 0, len(devices))
 	for _, device := range devices {
-		bridges = append(bridges, NewBridge(device.UrlBase))
+		bridges = append(bridges, NewBridge(device.Udn, device.UrlBase))
 	}
 
 	return bridges

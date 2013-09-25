@@ -6,7 +6,7 @@ import (
 )
 
 func Test_NewBridge(t *testing.T) {
-	bridge := NewBridge("192.168.0.1")
+	bridge := NewBridge("uuid:456-455", "192.168.0.1")
 	httpServer, ok := bridge.client.conn.(*httpServer)
 	if !ok {
 		t.Fatal("Didn't create an httpServer properly.")
@@ -29,10 +29,12 @@ func Test_reduceToHueDevices(t *testing.T) {
 func Test_convertHueDevicesToBridges(t *testing.T) {
 	devices := make([]ssdp.Device, 1, 1)
 	devices[0].UrlBase = "http://192.168.1.10:80/"
+	devices[0].Udn = "uuid:8678-9078"
 
 	bridges := convertHueDevicesToBridges(devices)
 
 	assertEqual(t, 1, len(bridges), "len(bridges)")
+	assertEqual(t, "uuid:8678-9078", bridges[0].UniqueId, "bridge.UniqueId")
 
 	httpServer, ok := bridges[0].client.conn.(*httpServer)
 	if !ok {

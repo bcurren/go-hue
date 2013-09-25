@@ -18,7 +18,7 @@ func NewStubBridge(stubFilename string) (*Bridge, *stubServer) {
 	if !ok {
 		panic("Not using a stub server in tests!")
 	}
-	return &Bridge{client: stubClient}, stubServer
+	return &Bridge{client: stubClient, UniqueId: "StubBridge"}, stubServer
 }
 
 func NewStubClient(responseFile string) *client {

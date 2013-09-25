@@ -9,8 +9,8 @@ type User struct {
 	Username string
 }
 
-func NewUser(username, addr string) *User {
-	return &User{Username: username, Bridge: NewBridge(addr)}
+func NewUser(username, bridgeId, addr string) *User {
+	return &User{Username: username, Bridge: NewBridge(bridgeId, addr)}
 }
 
 type ApiParseError struct {

@@ -5,7 +5,7 @@ import (
 )
 
 func Test_NewUser(t *testing.T) {
-	user := NewUser("myUsername", "10.4.5.2")
+	user := NewUser("myUsername", "uuid:454-454", "10.4.5.2")
 	httpServer, ok := user.Bridge.client.conn.(*httpServer)
 	if !ok {
 		t.Fatal("User doesn't have an httpServer set up.")
