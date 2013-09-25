@@ -2,7 +2,10 @@ package hue
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
+	"regexp"
+	"strings"
 )
 
 type server interface {
@@ -17,7 +20,9 @@ func (s *httpServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 	if requestBytes == nil {
 		requestBytes = make([]byte, 0, 0)
 	}
-	httpRequest, err := http.NewRequest(method, s.addr+uri, bytes.NewReader(requestBytes))
+
+	url := cleanUrl(fmt.Sprintf("%s/%s", s.addr, uri))
+	httpRequest, err := http.NewRequest(method, url, bytes.NewReader(requestBytes))
 	if err != nil {
 		return nil, err
 	}
@@ -36,4 +41,10 @@ func (s *httpServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 	}
 
 	return bodyBuffer.Bytes(), nil
+}
+
+func cleanUrl(url string) string {
+	doubleSlash := regexp.MustCompile(`/+`)
+	url = doubleSlash.ReplaceAllString(url, "/")
+	return strings.Replace(url, "http:/", "http://", -1)
 }
