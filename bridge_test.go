@@ -61,7 +61,7 @@ func Test_CreateUser(t *testing.T) {
 }
 
 func Test_IsValidUserReturnsTrue(t *testing.T) {
-	bridge, _ := NewStubBridge("get/username1/config.json")
+	bridge, _ := NewStubBridge("get/username1/lights.json")
 
 	isValid, err := bridge.IsValidUser("username1")
 	if err != nil {

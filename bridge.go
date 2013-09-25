@@ -69,7 +69,7 @@ func (b *Bridge) IsValidUser(username string) (bool, error) {
 	testUser := NewUserWithBridge(username, b)
 
 	// Get Configuration to determine if valid user
-	_, err := testUser.GetConfiguration()
+	_, err := testUser.GetLights()
 	if err != nil {
 		if apiError, ok := err.(*ApiError); ok {
 			for _, apiErrorDetail := range apiError.Errors {
