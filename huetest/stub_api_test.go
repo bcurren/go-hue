@@ -1,8 +1,8 @@
 package huetest
 
 import (
-	"testing"
 	"github.com/bcurren/go-hue"
+	"testing"
 )
 
 func Test_UserImplementsApiInterface(t *testing.T) {
