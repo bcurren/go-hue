@@ -18,7 +18,7 @@ For more information about the following API's see the [Hue Developer API Specif
 ## Usage
 
 * [Setup your go environment](http://golang.org/doc/code.html)
-* ```go get http://github.com/bcurren/go-hue```
+* ```go get github.com/bcurren/go-hue```
 * Write code using the library.
 
 ## How to contribute
