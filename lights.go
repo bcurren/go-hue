@@ -35,7 +35,7 @@ func (u *User) GetNewLights() ([]Light, time.Time, error) {
 
 	lastScanString, ok := lightsMap["lastscan"].(string)
 	if !ok {
-		return nil, time.Time{}, NewApiError("string", lightsMap["lastscan"], "lastscan")
+		return nil, time.Time{}, NewApiParseError("string", lightsMap["lastscan"], "lastscan")
 	}
 	lastScan, err := time.Parse(timeFormatISO8601, lastScanString)
 	if err != nil {
@@ -103,11 +103,11 @@ func parseLights(lightsMap map[string]interface{}) ([]Light, error) {
 	for lightId, lightInterface := range lightsMap {
 		lightMap, ok := lightInterface.(map[string]interface{})
 		if !ok {
-			return nil, NewApiError("map[string]interface{}", lightInterface, "lights map")
+			return nil, NewApiParseError("map[string]interface{}", lightInterface, "lights map")
 		}
 		name, ok := lightMap["name"].(string)
 		if !ok {
-			return nil, NewApiError("string", lightMap["name"], "lights name")
+			return nil, NewApiParseError("string", lightMap["name"], "lights name")
 		}
 		lights = append(lights, Light{Id: lightId, Name: name})
 	}

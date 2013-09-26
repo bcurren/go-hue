@@ -23,7 +23,7 @@ type ApiParseError struct {
 	Context  string
 }
 
-func NewApiError(expected string, actual interface{}, context string) error {
+func NewApiParseError(expected string, actual interface{}, context string) error {
 	return &ApiParseError{Expected: expected, Actual: actual, Context: context}
 }
 

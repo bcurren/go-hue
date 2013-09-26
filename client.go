@@ -3,8 +3,6 @@ package hue
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"strings"
 )
 
 type client struct {
@@ -129,45 +127,6 @@ func decodeApiError(resultBytes []byte) error {
 	}
 
 	return apiError
-}
-
-const (
-	UnauthorizedUserErrorType       = 1
-	InvalidJsonErrorType            = 2
-	ResourceNotAvailableErrorType   = 3
-	MethodNotAvailableErrorType     = 4
-	MissingParameterErrorType       = 5
-	ParameterNotAvailableErrorType  = 6
-	InvalidParameterValueErrorType  = 7
-	ParameterNotModifiableErrorType = 8
-	InternalErrorType               = 901
-	LinkButtonNotPressedErrorType   = 101
-	DeviceIsOffErrorType            = 201
-	GroupTableFullErrorType         = 301
-	DeviceGroupTableFullErrorType   = 302
-)
-
-type ApiError struct {
-	Errors []ApiErrorDetail
-}
-
-func (e ApiError) Error() string {
-	errors := make([]string, 0, 10)
-	for _, error := range e.Errors {
-		errors = append(errors, error.Error())
-	}
-
-	return strings.Join(errors, " ")
-}
-
-type ApiErrorDetail struct {
-	Type        int    `json:"type"`
-	Address     string `json:"address"`
-	Description string `json:"description"`
-}
-
-func (e ApiErrorDetail) Error() string {
-	return fmt.Sprintf("Hue API Error type '%d' with description '%s'.", e.Type, e.Description)
 }
 
 type ApiResult struct {
