@@ -15,10 +15,25 @@ type Api interface {
 	SetLightState(lightId string, state LightState) error
 	GetConfiguration() (*Configuration, error)
 
-	// TODO Configuration Api Methods:
-	// func (u *User) DeleteUser(*User) error
-	// func (u *User) UpdateConfiguration(*Configuration) error
-	// func (u *User) GetDataStore() (DataStore, error)
+	// TODO: Configuration Api Methods:
+	// DeleteUser(user *User) error
+	// UpdateConfiguration(*Configuration) error
+	// GetDataStore() (DataStore, error)
+
+	// TODO: Groups Api Methods
+	// GetGroups() ([]Group, error)
+	// GetGroupAttributes(groupId string) (*GroupAttributes, error)
+	// SetGroupAttributes(groupId string, attr GroupAttributes) error
+	// SetGroupState(groupId string, state GroupState) error
+	// CreateGroup - not supported in current hue api
+	// DeleteGroup - not supported in current hue api
+
+	// TODO: Schedule Api Methods
+	// GetSchedules() ([]Schedule, error)
+	// CreateSchedule(schedule Schedule) error
+	// GetScheduleAttributes(scheduleId string) (*ScheduleAttributes, error)
+	// SetScheduleAttributes(scheduleId string, attr ScheduleAttributes)
+	// DeleteSchedule(scheduleId string) error
 }
 
 type Light struct {
