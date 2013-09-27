@@ -5,21 +5,42 @@ import (
 	"time"
 )
 
+type sGetLights struct {
+	lights []hue.Light
+	apiError error
+}
+
 // GetLights() is same as hue.User.GetLights() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) GetLights() ([]hue.Light, error) {
-	listOfErrors := make([]error, 0, 1)
-	listOfLights := make([][]hue.Light, 0, len(m.apis))
-	
+	c := make(chan sGetLights)
 	for _, api := range m.apis {
-		lights, err := api.GetLights()
-		if err != nil {
-			listOfErrors = append(listOfErrors, err)
+		go gGetLights(c, api)
+	}
+	return rGetLights(c, len(m.apis))
+}
+
+func gGetLights(c chan sGetLights, api hue.API) {
+	lights, err := api.GetLights()
+	c <- sGetLights{lights, err}
+}
+
+func rGetLights(c chan sGetLights, numRespones int) ([]hue.Light, error) {
+	listOfErrors := make([]error, 0, 1)
+	listOfLights := make([][]hue.Light, 0, numRespones)
+	for i := 0; i < numRespones; i++ {
+		result := <- c
+		if result.apiError != nil {
+			listOfErrors = append(listOfErrors, result.apiError)
 		} else {
-			listOfLights = append(listOfLights, lights)
+			listOfLights = append(listOfLights, result.lights)
 		}
 	}
 	
+	return mergeLightSlice(listOfLights), nil
+}
+
+func mergeLightSlice(listOfLights [][]hue.Light) []hue.Light {
 	countOfLights := 0
 	for _, lights := range listOfLights {
 		countOfLights += len(lights)
@@ -32,7 +53,7 @@ func (m *MultiAPI) GetLights() ([]hue.Light, error) {
 		copyTo += len(lights)
 	}
 	
-	return mergedLights, nil
+	return mergedLights
 }
 
 // GetNewLights() is same as hue.User.GetNewLights() except all light ids are mapped to
