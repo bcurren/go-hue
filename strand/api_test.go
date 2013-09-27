@@ -136,7 +136,7 @@ func Test_SetLightState(t *testing.T) {
 	strand := NewLightStrand(1, stubAPI)
 	strand.Lights.Set("1", "light1")
 
-	lightState := hue.LightState{}
+	lightState := &hue.LightState{}
 	lightState.On = new(bool)
 	*lightState.On = true
 	err := strand.SetLightState("1", lightState)

@@ -118,7 +118,7 @@ func Test_SetLightName(t *testing.T) {
 func Test_SetLightState(t *testing.T) {
 	user, stubServer := NewStubUser("put/username1/lights/light1/state.json", "username1")
 
-	lightState := LightState{}
+	lightState := &LightState{}
 	lightState.On = new(bool)
 	*lightState.On = true
 	err := user.SetLightState("light1", lightState)

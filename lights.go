@@ -86,7 +86,7 @@ func (u *User) SetLightName(lightId string, name string) error {
 	return nil
 }
 
-func (u *User) SetLightState(lightId string, state LightState) error {
+func (u *User) SetLightState(lightId string, state *LightState) error {
 	url := fmt.Sprintf("/api/%s/lights/%s/state", u.Username, lightId)
 
 	_, err := u.Bridge.client.Put(url, &state)

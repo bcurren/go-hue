@@ -37,7 +37,7 @@ func (lg *LightStrand) SetLightName(socketId string, name string) error {
 	return lg.api.SetLightName(lightId, name)
 }
 
-func (lg *LightStrand) SetLightState(socketId string, state hue.LightState) error {
+func (lg *LightStrand) SetLightState(socketId string, state *hue.LightState) error {
 	lightId, err := lg.getLightIdFromSocketId(socketId, fmt.Sprintf("/lights/%s/state", socketId))
 	if err != nil {
 		return err

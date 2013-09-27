@@ -96,16 +96,16 @@ func (lg *LightStrand) validSocketId(socketId string) bool {
 	return true
 }
 
-func createWhiteLightState() hue.LightState {
-	white := hue.LightState{}
+func createWhiteLightState() *hue.LightState {
+	white := &hue.LightState{}
 	white.ColorTemp = new(uint16)
 	*white.ColorTemp = 1800
 
 	return white
 }
 
-func createRedLightState() hue.LightState {
-	red := hue.LightState{}
+func createRedLightState() *hue.LightState {
+	red := &hue.LightState{}
 	red.Brightness = new(uint8)
 	*red.Brightness = 255
 	red.Hue = new(uint16)
