@@ -5,55 +5,41 @@ import (
 	"time"
 )
 
-type sGetLights struct {
+type rGetLights struct {
 	lights []hue.Light
-	apiError error
+	err error
 }
 
 // GetLights() is same as hue.User.GetLights() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) GetLights() ([]hue.Light, error) {
-	c := make(chan sGetLights)
+	c := make(chan rGetLights)
 	for _, api := range m.apis {
 		go gGetLights(c, api)
 	}
-	return rGetLights(c, len(m.apis))
+	return lGetLights(c, len(m.apis))
 }
 
-func gGetLights(c chan sGetLights, api hue.API) {
+func gGetLights(c chan rGetLights, api hue.API) {
 	lights, err := api.GetLights()
-	c <- sGetLights{lights, err}
+	// TODO: Map lights ids to unique api light ids
+	c <- rGetLights{lights, err}
 }
 
-func rGetLights(c chan sGetLights, numRespones int) ([]hue.Light, error) {
-	listOfErrors := make([]error, 0, 1)
-	listOfLights := make([][]hue.Light, 0, numRespones)
-	for i := 0; i < numRespones; i++ {
+func lGetLights(c chan rGetLights, nResponses int) ([]hue.Light, error) {
+	lErrors := make([]error, 0, 1)
+	lLights := make([][]hue.Light, 0, nResponses)
+	
+	for i := 0; i < nResponses; i++ {
 		result := <- c
-		if result.apiError != nil {
-			listOfErrors = append(listOfErrors, result.apiError)
+		if result.err != nil {
+			lErrors = append(lErrors, result.err)
 		} else {
-			listOfLights = append(listOfLights, result.lights)
+			lLights = append(lLights, result.lights)
 		}
 	}
 	
-	return mergeLightSlice(listOfLights), nil
-}
-
-func mergeLightSlice(listOfLights [][]hue.Light) []hue.Light {
-	countOfLights := 0
-	for _, lights := range listOfLights {
-		countOfLights += len(lights)
-	}
-	
-	mergedLights := make([]hue.Light, countOfLights)
-	copyTo := 0
-	for _, lights := range listOfLights {
-		copy(mergedLights[copyTo:], lights)
-		copyTo += len(lights)
-	}
-	
-	return mergedLights
+	return mergeLights(lLights), mergeErrors(lErrors)
 }
 
 // GetNewLights() is same as hue.User.GetNewLights() except all light ids are mapped to
@@ -83,5 +69,25 @@ func (m *MultiAPI) SetLightName(socketId string, name string) error {
 // SetLightState() is same as hue.User.SetLightState() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) SetLightState(socketId string, state *hue.LightState) error {
+	return nil
+}
+
+func mergeLights(lLights [][]hue.Light) []hue.Light {
+	countOfLights := 0
+	for _, lights := range lLights {
+		countOfLights += len(lights)
+	}
+	
+	mLights := make([]hue.Light, countOfLights)
+	copyTo := 0
+	for _, lights := range lLights {
+		copy(mLights[copyTo:], lights)
+		copyTo += len(lights)
+	}
+	
+	return mLights
+}
+
+func mergeErrors(lErrors []error) error {
 	return nil
 }
