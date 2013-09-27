@@ -51,35 +51,35 @@ type StubApi struct {
 	GetConfigurationError  error
 }
 
-func (s StubApi) GetLights() ([]hue.Light, error) {
+func (s *StubApi) GetLights() ([]hue.Light, error) {
 	return s.GetLightsReturn, s.GetLightsError
 }
 
-func (s StubApi) GetNewLights() ([]hue.Light, time.Time, error) {
+func (s *StubApi) GetNewLights() ([]hue.Light, time.Time, error) {
 	return s.GetNewLightsReturn, s.GetNewLightsReturnTime, s.GetNewLightsError
 }
 
-func (s StubApi) SearchForNewLights() error {
+func (s *StubApi) SearchForNewLights() error {
 	return s.SearchForNewLightsError
 }
 
-func (s StubApi) GetLightAttributes(lightId string) (*hue.LightAttributes, error) {
+func (s *StubApi) GetLightAttributes(lightId string) (*hue.LightAttributes, error) {
 	s.GetLightAttributesParamLightId = lightId
 	return s.GetLightAttributesReturn, s.GetLightAttributesError
 }
 
-func (s StubApi) SetLightName(lightId string, name string) error {
+func (s *StubApi) SetLightName(lightId string, name string) error {
 	s.SetLightNameParamLightId = lightId
 	s.SetLightNameParamName = name
 	return s.SetLightNameError
 }
 
-func (s StubApi) SetLightState(lightId string, state hue.LightState) error {
+func (s *StubApi) SetLightState(lightId string, state hue.LightState) error {
 	s.SetLightStateParamLightId = lightId
 	s.SetLightStateParamLightState = state
 	return s.SetLightStateError
 }
 
-func (s StubApi) GetConfiguration() (*hue.Configuration, error) {
+func (s *StubApi) GetConfiguration() (*hue.Configuration, error) {
 	return s.GetConfigurationReturn, s.GetConfigurationError
 }

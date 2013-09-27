@@ -6,7 +6,7 @@ import (
 )
 
 func Test_UserImplementsApiInterface(t *testing.T) {
-	var stub StubApi
+	stub := &StubApi{}
 	funcThatTakesApiAsParameter(stub)
 }
 
