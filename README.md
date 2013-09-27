@@ -13,8 +13,8 @@ For more information about the Hue API see the [Hue Developer API Specification]
 
 This contains multiple packages. See the README in each package for more details. Here is a list for you reference.
 
-* huetest - Stub hue.API implementation to simplify testing.
-* strand - Provides a LightStrand that maps location on a strand to a light id in hue. 
+* [huetest](/huetest) - Stub hue.API implementation to simplify testing.
+* [strand](/strand) - Provides a LightStrand that maps location on a strand to a light id in hue. 
 
 ## Todo
 
