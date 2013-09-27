@@ -1,3 +1,4 @@
+// Examples of using strand
 package main
 
 import (

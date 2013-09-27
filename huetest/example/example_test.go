@@ -1,3 +1,4 @@
+// Examples of using huetest
 package example
 
 import (
