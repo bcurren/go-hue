@@ -10,6 +10,12 @@ type rGetLights struct {
 	err error
 }
 
+type rGetNewLights struct {
+	lights []hue.Light
+	lastScan time.Time
+	err error
+}
+
 // GetLights() is same as hue.User.GetLights() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) GetLights() ([]hue.Light, error) {
@@ -22,8 +28,7 @@ func (m *MultiAPI) GetLights() ([]hue.Light, error) {
 
 func gGetLights(c chan rGetLights, api hue.API) {
 	lights, err := api.GetLights()
-	// TODO: Map lights ids to unique api light ids
-	c <- rGetLights{lights, err}
+	c <- rGetLights{mapLightIds(lights), err}
 }
 
 func lGetLights(c chan rGetLights, nResponses int) ([]hue.Light, error) {
@@ -45,7 +50,35 @@ func lGetLights(c chan rGetLights, nResponses int) ([]hue.Light, error) {
 // GetNewLights() is same as hue.User.GetNewLights() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) GetNewLights() ([]hue.Light, time.Time, error) {
-	return nil, time.Now(), nil
+	c := make(chan rGetNewLights)
+	for _, api := range m.apis {
+		go gGetNewLights(c, api)
+	}
+	return lGetNewLights(c, len(m.apis))
+}
+
+func gGetNewLights(c chan rGetNewLights, api hue.API) {
+	lights, lastScan, err := api.GetNewLights()
+	c <- rGetNewLights{mapLightIds(lights), lastScan, err}
+}
+
+func lGetNewLights(c chan rGetNewLights, nResponses int) ([]hue.Light, time.Time, error) {
+	lErrors := make([]error, 0, 1)
+	lLights := make([][]hue.Light, 0, nResponses)
+	lLastScan := make([]time.Time, 0, nResponses)
+	
+	for i := 0; i < nResponses; i++ {
+		result := <- c
+		if result.err != nil {
+			lErrors = append(lErrors, result.err)
+		} 
+		if result.lights != nil {
+			lLights = append(lLights, result.lights)
+		}
+		lLastScan = append(lLastScan, result.lastScan)
+	}
+	
+	return mergeLights(lLights), mergeTime(lLastScan), mergeErrors(lErrors)
 }
 
 // SearchForNewLights() is same as hue.User.SearchForNewLights() except all light ids are mapped to
@@ -90,4 +123,12 @@ func mergeLights(lLights [][]hue.Light) []hue.Light {
 
 func mergeErrors(lErrors []error) error {
 	return nil
+}
+
+func mergeTime(lTime []time.Time) time.Time {
+	return lTime[0]
+}
+
+func mapLightIds(lLights []hue.Light) []hue.Light {
+	return lLights
 }
