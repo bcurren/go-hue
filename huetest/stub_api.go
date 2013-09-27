@@ -47,29 +47,44 @@ type StubAPI struct {
 	SetLightStateParamLightState *hue.LightState
 }
 
+// Stub version of GetLights. This function just returns GetLightsReturn and
+// GetLightsError in StubAPI struct.
 func (s *StubAPI) GetLights() ([]hue.Light, error) {
 	return s.GetLightsReturn, s.GetLightsError
 }
 
+// Stub version of GetNewLights. This function just returns GetNewLightsReturn,
+// GetNewLightsReturnTime and GetNewLightsError in StubAPI struct.
 func (s *StubAPI) GetNewLights() ([]hue.Light, time.Time, error) {
 	return s.GetNewLightsReturn, s.GetNewLightsReturnTime, s.GetNewLightsError
 }
 
+// Stub version of SearchForNewLights. This function just returns SearchForNewLightsError
+// in StubAPI struct.
 func (s *StubAPI) SearchForNewLights() error {
 	return s.SearchForNewLightsError
 }
 
+// Stub version of GetLightAttributes. This function just returns GetLightAttributesReturn and
+// GetLightAttributesError in StubAPI struct. It will also set GetLightAttributesParamLightId in
+// StubAPI to the value of the lightId parameter.
 func (s *StubAPI) GetLightAttributes(lightId string) (*hue.LightAttributes, error) {
 	s.GetLightAttributesParamLightId = lightId
 	return s.GetLightAttributesReturn, s.GetLightAttributesError
 }
 
+// Stub version of SetLightName. This function just returns SetLightNameError in StubAPI struct.
+// It will also set SetLightNameParamLightId to the value of lightId parameter and
+// SetLightNameParamName to the value of the name parameter.
 func (s *StubAPI) SetLightName(lightId string, name string) error {
 	s.SetLightNameParamLightId = lightId
 	s.SetLightNameParamName = name
 	return s.SetLightNameError
 }
 
+// Stub version of SetLightState. This function just returns SetLightStateError in StubAPI struct.
+// It will also set SetLightStateParamLightId to the value of lightId parameter and
+// SetLightStateParamLightState to the value of the state parameter.
 func (s *StubAPI) SetLightState(lightId string, state *hue.LightState) error {
 	s.SetLightStateParamLightId = lightId
 	s.SetLightStateParamLightState = state
