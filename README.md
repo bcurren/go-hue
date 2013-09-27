@@ -4,14 +4,24 @@ A typesafe, fully tested, go package for the Phillip's Hue client API.
 
 Note: This is a work in project and *NOT* ready to be used in production yet. I'm hoping to have it completed by the end of September 2013 and am actively working on the project.
 
-## Todo
+Please see [godoc.org](http://godoc.org/github.com/bcurren/go-hue) for a detailed API
+description.
 
-For more information about the following API's see the [Hue Developer API Specification](http://developers.meethue.com/).
+For more information about the Hue API see the [Hue Developer API Specification](http://developers.meethue.com/).
+
+# Packages
+
+This contains multiple packages. See the README in each package for more details. Here is a list for you reference.
+
+* huetest - Stub hue.API implementation to simplify testing.
+* strand - Provides a LightStrand that maps location on a strand to a light id in hue. 
+
+## Todo
 
 - [X] Lights API
 - [~] Configuration API
 - [X] Discovery API
-- [ ] Documentation
+- [~] Documentation
 - [ ] Groups API
 - [ ] Schedules API
 
