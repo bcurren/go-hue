@@ -115,20 +115,32 @@ func lSearchForNewLights(c chan rSearchForNewLights, nResponses int) error {
 
 // GetLightAttributes() is same as hue.User.GetLightAttributes() except all light ids are mapped to
 // socket ids.
-func (m *MultiAPI) GetLightAttributes(socketId string) (*hue.LightAttributes, error) {
-	return nil, nil
+func (m *MultiAPI) GetLightAttributes(lightId string) (*hue.LightAttributes, error) {
+	api, newLightId, err := m.findAPIAndLightId(lightId)
+	if err != nil {
+		return nil, err
+	}
+	return api.GetLightAttributes(newLightId)
 }
 
 // SetLightName() is same as hue.User.SetLightName() except all light ids are mapped to
 // socket ids.
-func (m *MultiAPI) SetLightName(socketId string, name string) error {
-	return nil
+func (m *MultiAPI) SetLightName(lightId string, name string) error {
+	api, newLightId, err := m.findAPIAndLightId(lightId)
+	if err != nil {
+		return err
+	}
+	return api.SetLightName(newLightId, name)
 }
 
 // SetLightState() is same as hue.User.SetLightState() except all light ids are mapped to
 // socket ids.
-func (m *MultiAPI) SetLightState(socketId string, state *hue.LightState) error {
-	return nil
+func (m *MultiAPI) SetLightState(lightId string, state *hue.LightState) error {
+	api, newLightId, err := m.findAPIAndLightId(lightId)
+	if err != nil {
+		return err
+	}
+	return api.SetLightState(newLightId, state)
 }
 
 func mergeLights(lLights [][]hue.Light) []hue.Light {
@@ -157,4 +169,8 @@ func mergeTime(lTime []time.Time) time.Time {
 
 func mapLightIds(lLights []hue.Light) []hue.Light {
 	return lLights
+}
+
+func (m *MultiAPI) findAPIAndLightId(lightId string) (hue.API, string, error) {
+	return m.apis[0], lightId, nil
 }
