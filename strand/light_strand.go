@@ -1,4 +1,4 @@
-// Package with a LightStrand that implementes the hue.API interface. It maps 
+// Package with a LightStrand that implementes the hue.API interface. It maps
 // light ids to socket locations on a strand of lights.
 package strand
 
@@ -38,7 +38,7 @@ func (lg *LightStrand) SetDelegateAPI(api hue.API) {
 // 1. Turn all lights white
 // 2. For each unmapped light
 //   a. Turn the bulb red
-//   b. Call socketToLightFunc - The implementation should return the socket id for 
+//   b. Call socketToLightFunc - The implementation should return the socket id for
 //      the unmapped light
 //   c. Map the bulb to the socket id
 //   d. Turn the white bulb and continue
