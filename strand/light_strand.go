@@ -6,12 +6,12 @@ import (
 )
 
 type LightStrand struct {
-	api    hue.Api
+	api    hue.API
 	Length int
 	Lights map[string]string
 }
 
-func NewLightStrand(length int, api hue.Api) *LightStrand {
+func NewLightStrand(length int, api hue.API) *LightStrand {
 	var lightStrand LightStrand
 	lightStrand.api = api
 	lightStrand.Length = length
@@ -20,7 +20,7 @@ func NewLightStrand(length int, api hue.Api) *LightStrand {
 	return &lightStrand
 }
 
-func (lg *LightStrand) SetDelegateApi(api hue.Api) {
+func (lg *LightStrand) SetDelegateAPI(api hue.API) {
 	lg.api = api
 }
 

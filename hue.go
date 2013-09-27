@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type Api interface {
+type API interface {
 	GetLights() ([]Light, error)
 	GetNewLights() ([]Light, time.Time, error)
 	SearchForNewLights() error
@@ -15,12 +15,12 @@ type Api interface {
 	SetLightState(lightId string, state LightState) error
 	GetConfiguration() (*Configuration, error)
 
-	// TODO: Configuration Api Methods:
+	// TODO: Configuration API Methods:
 	// DeleteUser(user *User) error
 	// UpdateConfiguration(*Configuration) error
 	// GetDataStore() (DataStore, error)
 
-	// TODO: Groups Api Methods
+	// TODO: Groups API Methods
 	// GetGroups() ([]Group, error)
 	// GetGroupAttributes(groupId string) (*GroupAttributes, error)
 	// SetGroupAttributes(groupId string, attr GroupAttributes) error
@@ -28,7 +28,7 @@ type Api interface {
 	// CreateGroup - not supported in current hue api
 	// DeleteGroup - not supported in current hue api
 
-	// TODO: Schedule Api Methods
+	// TODO: Schedule API Methods
 	// GetSchedules() ([]Schedule, error)
 	// CreateSchedule(schedule Schedule) error
 	// GetScheduleAttributes(scheduleId string) (*ScheduleAttributes, error)
@@ -46,7 +46,7 @@ type LightState struct {
 	Brightness     *uint8    `json:"bri,omitempty"`
 	Hue            *uint16   `json:"hue,omitempty"`
 	Saturation     *uint8    `json:"sat,omitempty"`
-	Xy             []float64 `json:"xy,omitempty"`
+	XY             []float64 `json:"xy,omitempty"`
 	ColorTemp      *uint16   `json:"ct,omitempty"`
 	Alert          string    `json:"alert,omitempty"`
 	Effect         string    `json:"effect,omitempty"`
@@ -69,24 +69,24 @@ type Configuration struct {
 	Name           string              `json:"name,omitempty"`
 	ProxyAddress   string              `json:"proxyaddress,omitempty"`
 	ProxyPort      *uint16             `json:"proxyport,omitempty"`
-	IpAddress      string              `json:"ipaddress,omitempty"`
+	IPAddress      string              `json:"ipaddress,omitempty"`
 	Netmask        string              `json:"netmask,omitempty"`
 	Gateway        string              `json:"gateway,omitempty"`
-	Dhcp           *bool               `json:"dhcp,omitempty"`
+	DHCP           *bool               `json:"dhcp,omitempty"`
 	PortalServices *bool               `json:"portalservices,omitempty"`
 	LinkButton     *bool               `json:"linkbutton,omitempty"`
 	SoftwareUpdate *SoftwareUpdateInfo `json:"swupdate,omitempty"`
 
 	// Read only
-	Utc             string                       `json:"utc,omitempty"`
+	UTC             string                       `json:"utc,omitempty"`
 	Whitelist       map[string]map[string]string `json:"whitelist,omitempty"`
 	SoftwareVersion string                       `json:"swversion,omitempty"`
-	Mac             string                       `json:"mac,omitempty"`
+	MAC             string                       `json:"mac,omitempty"`
 }
 
 type SoftwareUpdateInfo struct {
 	UpdateState *uint  `json:"updatestate,omitempty"`
-	Url         string `json:"url,omitempty"`
+	URL         string `json:"url,omitempty"`
 	Text        string `json:"text,omitempty"`
 	Notify      *bool  `json:"notify,omitempty"`
 }
@@ -107,11 +107,11 @@ const (
 	DeviceGroupTableFullErrorType   = 302
 )
 
-type ApiError struct {
-	Errors []ApiErrorDetail
+type APIError struct {
+	Errors []APIErrorDetail
 }
 
-func (e ApiError) Error() string {
+func (e APIError) Error() string {
 	errors := make([]string, 0, 10)
 	for _, error := range e.Errors {
 		errors = append(errors, error.Error())
@@ -120,12 +120,12 @@ func (e ApiError) Error() string {
 	return strings.Join(errors, " ")
 }
 
-type ApiErrorDetail struct {
+type APIErrorDetail struct {
 	Type        int    `json:"type"`
 	Address     string `json:"address"`
 	Description string `json:"description"`
 }
 
-func (e ApiErrorDetail) Error() string {
+func (e APIErrorDetail) Error() string {
 	return fmt.Sprintf("Hue API Error type '%d' with description '%s'.", e.Type, e.Description)
 }

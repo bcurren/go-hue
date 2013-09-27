@@ -15,8 +15,8 @@ func Test_NewUser(t *testing.T) {
 	assertEqual(t, "10.4.5.2", httpServer.addr, "httpServer.addr")
 }
 
-func Test_ApiParseErrorString(t *testing.T) {
-	err := NewApiParseError("string", 1, "user count")
+func Test_APIParseErrorString(t *testing.T) {
+	err := NewAPIParseError("string", 1, "user count")
 	assertEqual(t, "Parsing error: expected type 'string' but received 'int' for user count.",
 		err.Error(), "err message")
 }

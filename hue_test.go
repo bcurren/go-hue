@@ -4,11 +4,11 @@ import (
 	"testing"
 )
 
-func Test_UserImplementsApiInterface(t *testing.T) {
+func Test_UserImplementsAPIInterface(t *testing.T) {
 	user, _ := NewStubUser("get/username1/config.json", "username1")
-	funcThatTakesApiAsParameter(user)
+	funcThatTakesAPIAsParameter(user)
 }
 
-func funcThatTakesApiAsParameter(api Api) {
+func funcThatTakesAPIAsParameter(api API) {
 	// noop
 }

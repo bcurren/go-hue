@@ -5,11 +5,11 @@ import (
 	"testing"
 )
 
-func Test_UserImplementsApiInterface(t *testing.T) {
-	stub := &StubApi{}
-	funcThatTakesApiAsParameter(stub)
+func Test_UserImplementsAPIInterface(t *testing.T) {
+	stub := &StubAPI{}
+	funcThatTakesAPIAsParameter(stub)
 }
 
-func funcThatTakesApiAsParameter(api hue.Api) {
+func funcThatTakesAPIAsParameter(api hue.API) {
 	// noop
 }

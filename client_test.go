@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-func Test_NewHttpClient(t *testing.T) {
-	client := NewHttpClient("192.168.10.2")
+func Test_NewHTTPClient(t *testing.T) {
+	client := NewHTTPClient("192.168.10.2")
 	httpServer, ok := client.conn.(*httpServer)
 	if !ok {
 		t.Fatal("Client doesn't have an httpServer")
@@ -37,7 +37,7 @@ func Test_GetWithResponseError(t *testing.T) {
 
 	var lights map[string]map[string]string
 	err := c.Get("/api/username1/lights", &lights)
-	apiError, ok := err.(*ApiError)
+	apiError, ok := err.(*APIError)
 	if !ok {
 		t.Fatal("Should return an unauthorized user error.")
 	}
@@ -65,9 +65,9 @@ func Test_SendNonGetAllErrorResponse(t *testing.T) {
 	c := NewStubClient("errors/unauthorized_user.json")
 
 	successes, err := c.Send("POST", "/api/username1/lights", nil)
-	apiError, ok := err.(*ApiError)
+	apiError, ok := err.(*APIError)
 	if !ok {
-		t.Fatal("Error should be ApiError.")
+		t.Fatal("Error should be APIError.")
 	}
 
 	errors := apiError.Errors
@@ -84,9 +84,9 @@ func Test_SendNonGetMixedSuccessAndErrorResponse(t *testing.T) {
 	c := NewStubClient("errors/mixed_errors.json")
 
 	successes, err := c.Send("POST", "/api/username1/lights", nil)
-	apiError, ok := err.(*ApiError)
+	apiError, ok := err.(*APIError)
 	if !ok {
-		t.Fatal("Error should be ApiError.")
+		t.Fatal("Error should be APIError.")
 	}
 
 	assertEqual(t, 1, len(successes), "len(successes)")

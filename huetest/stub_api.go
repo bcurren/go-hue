@@ -1,4 +1,4 @@
-// Package with a Stub Api that conforms to the hue.Api interface for testing
+// Package with a Stub API that conforms to the hue.API interface for testing
 // purposes.
 package huetest
 
@@ -7,18 +7,18 @@ import (
 	"time"
 )
 
-// StubApi contains the stub return values for all functions in the hue.Api interface.
+// StubAPI contains the stub return values for all functions in the hue.API interface.
 //
 // Here is an example of how to use this struct:
 //
-// var stub huetest.StubApi
+// var stub huetest.StubAPI
 // stub.GetLightsError = errors.NewError("This is an error")
 //
 // lights, err := stub.GetLights()
 // if err.Error() != "This is an error" {
 // 	fmt.Println("Stub is not working")
 // }
-type StubApi struct {
+type StubAPI struct {
 	// Stub GetLights()
 	GetLightsReturn []hue.Light
 	GetLightsError  error
@@ -51,35 +51,35 @@ type StubApi struct {
 	GetConfigurationError  error
 }
 
-func (s *StubApi) GetLights() ([]hue.Light, error) {
+func (s *StubAPI) GetLights() ([]hue.Light, error) {
 	return s.GetLightsReturn, s.GetLightsError
 }
 
-func (s *StubApi) GetNewLights() ([]hue.Light, time.Time, error) {
+func (s *StubAPI) GetNewLights() ([]hue.Light, time.Time, error) {
 	return s.GetNewLightsReturn, s.GetNewLightsReturnTime, s.GetNewLightsError
 }
 
-func (s *StubApi) SearchForNewLights() error {
+func (s *StubAPI) SearchForNewLights() error {
 	return s.SearchForNewLightsError
 }
 
-func (s *StubApi) GetLightAttributes(lightId string) (*hue.LightAttributes, error) {
+func (s *StubAPI) GetLightAttributes(lightId string) (*hue.LightAttributes, error) {
 	s.GetLightAttributesParamLightId = lightId
 	return s.GetLightAttributesReturn, s.GetLightAttributesError
 }
 
-func (s *StubApi) SetLightName(lightId string, name string) error {
+func (s *StubAPI) SetLightName(lightId string, name string) error {
 	s.SetLightNameParamLightId = lightId
 	s.SetLightNameParamName = name
 	return s.SetLightNameError
 }
 
-func (s *StubApi) SetLightState(lightId string, state hue.LightState) error {
+func (s *StubAPI) SetLightState(lightId string, state hue.LightState) error {
 	s.SetLightStateParamLightId = lightId
 	s.SetLightStateParamLightState = state
 	return s.SetLightStateError
 }
 
-func (s *StubApi) GetConfiguration() (*hue.Configuration, error) {
+func (s *StubAPI) GetConfiguration() (*hue.Configuration, error) {
 	return s.GetConfigurationReturn, s.GetConfigurationError
 }

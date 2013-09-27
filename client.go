@@ -9,7 +9,7 @@ type client struct {
 	conn server
 }
 
-func NewHttpClient(addr string) *client {
+func NewHTTPClient(addr string) *client {
 	return &client{conn: &httpServer{addr: addr}}
 }
 
@@ -21,25 +21,25 @@ func (c *client) Get(uri string, responseObj interface{}) error {
 
 	err = decode(resultBytes, responseObj)
 	if err != nil {
-		_, errors, err := decodeApiResult(resultBytes)
+		_, errors, err := decodeAPIResult(resultBytes)
 		if err != nil {
 			return err
 		}
-		return &ApiError{errors}
+		return &APIError{errors}
 	}
 
 	return nil
 }
 
-func (c *client) Post(uri string, requestObj interface{}) ([]ApiSuccessDetail, error) {
+func (c *client) Post(uri string, requestObj interface{}) ([]APISuccessDetail, error) {
 	return c.Send("POST", uri, requestObj)
 }
 
-func (c *client) Put(uri string, requestObj interface{}) ([]ApiSuccessDetail, error) {
+func (c *client) Put(uri string, requestObj interface{}) ([]APISuccessDetail, error) {
 	return c.Send("PUT", uri, requestObj)
 }
 
-func (c *client) Send(method string, uri string, requestObj interface{}) ([]ApiSuccessDetail, error) {
+func (c *client) Send(method string, uri string, requestObj interface{}) ([]APISuccessDetail, error) {
 	requestBytes, err := encode(requestObj)
 	if err != nil {
 		return nil, err
@@ -50,28 +50,28 @@ func (c *client) Send(method string, uri string, requestObj interface{}) ([]ApiS
 		return nil, err
 	}
 
-	successes, errors, err := decodeApiResult(resultBytes)
+	successes, errors, err := decodeAPIResult(resultBytes)
 	if err != nil {
 		return nil, err
 	}
 	if len(errors) != 0 {
-		return successes, &ApiError{errors}
+		return successes, &APIError{errors}
 	}
 
 	return successes, nil
 }
 
-func decodeApiResult(resultBytes []byte) ([]ApiSuccessDetail, []ApiErrorDetail, error) {
+func decodeAPIResult(resultBytes []byte) ([]APISuccessDetail, []APIErrorDetail, error) {
 	// Decode api result
-	var responseObj []*ApiResult
+	var responseObj []*APIResult
 	err := decode(resultBytes, &responseObj)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	// Create slice of successes and errors
-	successes := make([]ApiSuccessDetail, 0, 5)
-	errors := make([]ApiErrorDetail, 0, 5)
+	successes := make([]APISuccessDetail, 0, 5)
+	errors := make([]APIErrorDetail, 0, 5)
 	for _, result := range responseObj {
 		if result.Success != nil {
 			successes = append(successes, *result.Success)
@@ -111,17 +111,17 @@ func decode(resultBytes []byte, responseObj interface{}) error {
 	return decoder.Decode(responseObj)
 }
 
-func decodeApiError(resultBytes []byte) error {
+func decodeAPIError(resultBytes []byte) error {
 	// Parse the error response
-	var apiErrorDetails []map[string]*ApiErrorDetail
+	var apiErrorDetails []map[string]*APIErrorDetail
 	err := decode(resultBytes, &apiErrorDetails)
 	if err != nil {
 		return err
 	}
 
-	// Build ApiError structure with slice of errors
-	apiError := &ApiError{}
-	apiError.Errors = make([]ApiErrorDetail, 0, 1)
+	// Build APIError structure with slice of errors
+	apiError := &APIError{}
+	apiError.Errors = make([]APIErrorDetail, 0, 1)
 	for _, apiErrorDetail := range apiErrorDetails {
 		apiError.Errors = append(apiError.Errors, *apiErrorDetail["error"])
 	}
@@ -129,9 +129,9 @@ func decodeApiError(resultBytes []byte) error {
 	return apiError
 }
 
-type ApiResult struct {
-	Success *ApiSuccessDetail `json:"success"`
-	Error   *ApiErrorDetail   `json:"error"`
+type APIResult struct {
+	Success *APISuccessDetail `json:"success"`
+	Error   *APIErrorDetail   `json:"error"`
 }
 
-type ApiSuccessDetail map[string]interface{}
+type APISuccessDetail map[string]interface{}

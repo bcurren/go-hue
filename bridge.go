@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const HueModelUrl = "http://www.meethue.com"
+const HueModelURL = "http://www.meethue.com"
 
 type Bridge struct {
 	UniqueId string
@@ -13,7 +13,7 @@ type Bridge struct {
 }
 
 func NewBridge(uniqueId, addr string) *Bridge {
-	client := NewHttpClient(addr)
+	client := NewHTTPClient(addr)
 	return &Bridge{UniqueId: uniqueId, client: client}
 }
 
@@ -33,7 +33,7 @@ func reduceToHueDevices(devices []ssdp.Device) []ssdp.Device {
 	hueDevices := make([]ssdp.Device, 0, len(devices))
 
 	for _, device := range devices {
-		if device.ModelUrl == HueModelUrl {
+		if device.ModelURL == HueModelURL {
 			hueDevices = append(hueDevices, device)
 		}
 	}
@@ -44,7 +44,7 @@ func reduceToHueDevices(devices []ssdp.Device) []ssdp.Device {
 func convertHueDevicesToBridges(devices []ssdp.Device) []*Bridge {
 	bridges := make([]*Bridge, 0, len(devices))
 	for _, device := range devices {
-		bridges = append(bridges, NewBridge(device.Udn, device.UrlBase))
+		bridges = append(bridges, NewBridge(device.UDN, device.URLBase))
 	}
 
 	return bridges
@@ -71,7 +71,7 @@ func (b *Bridge) IsValidUser(username string) (bool, error) {
 	// Get Configuration to determine if valid user
 	_, err := testUser.GetLights()
 	if err != nil {
-		if apiError, ok := err.(*ApiError); ok {
+		if apiError, ok := err.(*APIError); ok {
 			for _, apiErrorDetail := range apiError.Errors {
 				if apiErrorDetail.Type == UnauthorizedUserErrorType {
 					return false, nil

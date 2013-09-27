@@ -8,8 +8,8 @@ import (
 )
 
 func Test_NewLightStrand(t *testing.T) {
-	stubHueApi := &huetest.StubApi{}
-	lightStrand := NewLightStrand(3, stubHueApi)
+	stubHueAPI := &huetest.StubAPI{}
+	lightStrand := NewLightStrand(3, stubHueAPI)
 
 	if lightStrand.Length != 3 {
 		t.Error("Light strand should have length given in constructor.")
@@ -23,21 +23,21 @@ func Test_MapUnmappedLights(t *testing.T) {
 	hueLights := make([]hue.Light, 1, 1)
 	hueLights[0].Id = "3"
 
-	stubHueApi := &huetest.StubApi{}
-	stubHueApi.GetLightsError = nil
-	stubHueApi.GetLightsReturn = hueLights
+	stubHueAPI := &huetest.StubAPI{}
+	stubHueAPI.GetLightsError = nil
+	stubHueAPI.GetLightsReturn = hueLights
 
-	lightStrand := NewLightStrand(3, stubHueApi)
+	lightStrand := NewLightStrand(3, stubHueAPI)
 
 	countTimesCalled := 0
 	err := lightStrand.MapUnmappedLights(func() string {
 		countTimesCalled += 1
 
 		// Should have set hue light to red
-		if stubHueApi.SetLightStateParamLightId != "3" {
+		if stubHueAPI.SetLightStateParamLightId != "3" {
 			t.Error("Should have set light 3.")
 		}
-		if stubHueApi.SetLightStateParamLightState.Hue == nil {
+		if stubHueAPI.SetLightStateParamLightState.Hue == nil {
 			t.Error("Should have set the state.")
 		}
 
@@ -55,10 +55,10 @@ func Test_MapUnmappedLights(t *testing.T) {
 	}
 
 	// Should have set hue light to white
-	if stubHueApi.SetLightStateParamLightId != "3" {
+	if stubHueAPI.SetLightStateParamLightId != "3" {
 		t.Error("Should have set light 3.")
 	}
-	if stubHueApi.SetLightStateParamLightState.ColorTemp == nil {
+	if stubHueAPI.SetLightStateParamLightState.ColorTemp == nil {
 		t.Error("Should have set the state.")
 	}
 }
@@ -83,11 +83,11 @@ func Test_GetUnmappedLightIds(t *testing.T) {
 	hueLights[2].Id = "5"
 	hueLights[3].Id = "2"
 
-	stubHueApi := &huetest.StubApi{}
-	stubHueApi.GetLightsError = nil
-	stubHueApi.GetLightsReturn = hueLights
+	stubHueAPI := &huetest.StubAPI{}
+	stubHueAPI.GetLightsError = nil
+	stubHueAPI.GetLightsReturn = hueLights
 
-	lightStrand := NewLightStrand(3, stubHueApi)
+	lightStrand := NewLightStrand(3, stubHueAPI)
 	lightStrand.mapLightToSocket("3", "1")
 	lightStrand.mapLightToSocket("2", "2")
 	lightStrand.mapLightToSocket("1", "3")

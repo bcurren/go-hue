@@ -5,11 +5,11 @@ import (
 	"testing"
 )
 
-func Test_LightStrandImplementsApiInterface(t *testing.T) {
+func Test_LightStrandImplementsAPIInterface(t *testing.T) {
 	lightStrand := NewLightStrand(3, nil)
-	funcThatTakesApiAsParameter(lightStrand)
+	funcThatTakesAPIAsParameter(lightStrand)
 }
 
-func funcThatTakesApiAsParameter(api hue.Api) {
+func funcThatTakesAPIAsParameter(api hue.API) {
 	// noop
 }
