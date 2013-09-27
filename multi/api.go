@@ -32,7 +32,7 @@ func (m *MultiAPI) GetLights() ([]hue.Light, error) {
 
 func gGetLights(c chan rGetLights, api hue.API) {
 	lights, err := api.GetLights()
-	c <- rGetLights{mapLightIds(lights), err}
+	c <- rGetLights{mapLightIds(api, lights), err}
 }
 
 func lGetLights(c chan rGetLights, nResponses int) ([]hue.Light, error) {
@@ -63,7 +63,7 @@ func (m *MultiAPI) GetNewLights() ([]hue.Light, time.Time, error) {
 
 func gGetNewLights(c chan rGetNewLights, api hue.API) {
 	lights, lastScan, err := api.GetNewLights()
-	c <- rGetNewLights{mapLightIds(lights), lastScan, err}
+	c <- rGetNewLights{mapLightIds(api, lights), lastScan, err}
 }
 
 func lGetNewLights(c chan rGetNewLights, nResponses int) ([]hue.Light, time.Time, error) {
@@ -160,14 +160,32 @@ func mergeLights(lLights [][]hue.Light) []hue.Light {
 }
 
 func mergeErrors(lErrors []error) error {
-	return nil
+	if lErrors == nil || len(lErrors) <= 0 {
+		return nil
+	}
+	
+	apiErrorDetails := make([]hue.APIErrorDetail, 0, len(lErrors))
+	
+	// Collect all error details and exit if non API error found
+	// TODO: Collect all non API Errors for an array of errors return type
+	for _, err := range lErrors {
+		if apiError, ok := err.(*hue.APIError); ok {
+			for _, apiErrorDetail := range apiError.Errors {
+				apiErrorDetails = append(apiErrorDetails, apiErrorDetail)
+			}
+		} else {
+			return err
+		}
+	}
+	
+	return &hue.APIError{apiErrorDetails}
 }
 
 func mergeTime(lTime []time.Time) time.Time {
 	return lTime[0]
 }
 
-func mapLightIds(lLights []hue.Light) []hue.Light {
+func mapLightIds(api hue.API, lLights []hue.Light) []hue.Light {
 	return lLights
 }
 
