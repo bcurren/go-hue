@@ -16,6 +16,10 @@ type rGetNewLights struct {
 	err error
 }
 
+type rSearchForNewLights struct {
+	err error
+}
+
 // GetLights() is same as hue.User.GetLights() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) GetLights() ([]hue.Light, error) {
@@ -84,7 +88,29 @@ func lGetNewLights(c chan rGetNewLights, nResponses int) ([]hue.Light, time.Time
 // SearchForNewLights() is same as hue.User.SearchForNewLights() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) SearchForNewLights() error {
-	return nil
+	c := make(chan rSearchForNewLights)
+	for _, api := range m.apis {
+		go gSearchForNewLights(c, api)
+	}
+	return lSearchForNewLights(c, len(m.apis))
+}
+
+func gSearchForNewLights(c chan rSearchForNewLights, api hue.API) {
+	err := api.SearchForNewLights()
+	c <- rSearchForNewLights{err}
+}
+
+func lSearchForNewLights(c chan rSearchForNewLights, nResponses int) error {
+	lErrors := make([]error, 0, 1)
+	
+	for i := 0; i < nResponses; i++ {
+		result := <- c
+		if result.err != nil {
+			lErrors = append(lErrors, result.err)
+		} 
+	}
+	
+	return mergeErrors(lErrors)
 }
 
 // GetLightAttributes() is same as hue.User.GetLightAttributes() except all light ids are mapped to

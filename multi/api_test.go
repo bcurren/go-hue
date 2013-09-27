@@ -36,6 +36,15 @@ func Test_GetNewLights(t *testing.T) {
 	}
 }
 
+func Test_SearchForNewLights(t *testing.T) {
+	multi, _, _ := newStubMultiAPI()
+	
+	err := multi.SearchForNewLights()
+	if err != nil {
+		t.Fatal("Error was returned.", err)
+	}
+}
+
 func newStubMultiAPI() (*MultiAPI, *huetest.StubAPI, *huetest.StubAPI) {
 	api1 := &huetest.StubAPI{}
 	api2 := &huetest.StubAPI{}
