@@ -1,15 +1,12 @@
 # go-hue/huetest
 
-A stub implementation of the hue.API interface for testing purposes. This package
-allows you to easily stub out calls to the server.
+A stub implementation of the hue.API interface for testing purposes. This package allows you to easily stub out calls to the server.
 
-Please see [godoc.org](http://godoc.org/github.com/bcurren/go-hue/huetest) for detailed API
-description.
+Please see [godoc.org](http://godoc.org/github.com/bcurren/go-hue/huetest) for detailed API description.
 
 ## Example
 
-See the examples directory for running code using this package. Below is an inline exerpt
-from that directory.
+See the [examples](example/) directory for running code using this package. Below is an inline excerpt from that directory.
 
 ```Go
 package example
