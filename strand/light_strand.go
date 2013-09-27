@@ -1,3 +1,5 @@
+// Package with a LightStrand that implementes the hue.API interface. It maps 
+// light ids to socket locations on a strand of lights.
 package strand
 
 import (
