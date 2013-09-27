@@ -32,7 +32,7 @@ type API interface {
 
 type AdminAPI interface {
 	GetConfiguration() (*Configuration, error)
-	
+
 	// TODO: Configuration API Methods:
 	// DeleteUser(user *User) error
 	// UpdateConfiguration(*Configuration) error
