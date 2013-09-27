@@ -45,10 +45,6 @@ type StubAPI struct {
 	SetLightStateError           error
 	SetLightStateParamLightId    string
 	SetLightStateParamLightState hue.LightState
-
-	// Stub GetConfiguration()
-	GetConfigurationReturn *hue.Configuration
-	GetConfigurationError  error
 }
 
 func (s *StubAPI) GetLights() ([]hue.Light, error) {
@@ -78,8 +74,4 @@ func (s *StubAPI) SetLightState(lightId string, state hue.LightState) error {
 	s.SetLightStateParamLightId = lightId
 	s.SetLightStateParamLightState = state
 	return s.SetLightStateError
-}
-
-func (s *StubAPI) GetConfiguration() (*hue.Configuration, error) {
-	return s.GetConfigurationReturn, s.GetConfigurationError
 }

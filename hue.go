@@ -13,12 +13,6 @@ type API interface {
 	GetLightAttributes(lightId string) (*LightAttributes, error)
 	SetLightName(lightId string, name string) error
 	SetLightState(lightId string, state LightState) error
-	GetConfiguration() (*Configuration, error)
-
-	// TODO: Configuration API Methods:
-	// DeleteUser(user *User) error
-	// UpdateConfiguration(*Configuration) error
-	// GetDataStore() (DataStore, error)
 
 	// TODO: Groups API Methods
 	// GetGroups() ([]Group, error)
@@ -34,6 +28,15 @@ type API interface {
 	// GetScheduleAttributes(scheduleId string) (*ScheduleAttributes, error)
 	// SetScheduleAttributes(scheduleId string, attr ScheduleAttributes)
 	// DeleteSchedule(scheduleId string) error
+}
+
+type AdminAPI interface {
+	GetConfiguration() (*Configuration, error)
+	
+	// TODO: Configuration API Methods:
+	// DeleteUser(user *User) error
+	// UpdateConfiguration(*Configuration) error
+	// GetDataStore() (DataStore, error)
 }
 
 type Light struct {

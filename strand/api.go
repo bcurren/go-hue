@@ -45,10 +45,6 @@ func (lg *LightStrand) SetLightState(socketId string, state hue.LightState) erro
 	return lg.api.SetLightState(lightId, state)
 }
 
-func (lg *LightStrand) GetConfiguration() (*hue.Configuration, error) {
-	return lg.api.GetConfiguration()
-}
-
 func (lg *LightStrand) getLightIdFromSocketId(socketId, address string) (string, error) {
 	lightId := lg.Lights.GetValue(socketId)
 	if lightId == "" {
