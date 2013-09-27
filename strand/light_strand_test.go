@@ -14,7 +14,7 @@ func Test_NewLightStrand(t *testing.T) {
 	if lightStrand.Length != 3 {
 		t.Error("Light strand should have length given in constructor.")
 	}
-	if len(lightStrand.Lights) != 0 {
+	if lightStrand.Lights.Length() != 0 {
 		t.Error("Light strand should have Lights initialized to empty.")
 	}
 }
@@ -50,7 +50,7 @@ func Test_MapUnmappedLights(t *testing.T) {
 	if countTimesCalled != 1 {
 		t.Error("Map function called more than 1 time.")
 	}
-	if lightStrand.Lights["1"] != "3" {
+	if lightStrand.Lights.GetValue("1") != "3" {
 		t.Error("Didn't map to the correct id.")
 	}
 
@@ -65,11 +65,11 @@ func Test_MapUnmappedLights(t *testing.T) {
 
 func Test_GetMappedLightIds(t *testing.T) {
 	lightStrand := NewLightStrand(3, nil)
-	lightStrand.mapLightToSocket("3", "1")
-	lightStrand.mapLightToSocket("2", "2")
-	lightStrand.mapLightToSocket("1", "3")
+	lightStrand.setSocketIdToLightId("1", "light1")
+	lightStrand.setSocketIdToLightId("2", "light2")
+	lightStrand.setSocketIdToLightId("3", "light3")
 
-	expected := []string{"3", "2", "1"}
+	expected := []string{"light1", "light2", "light3"}
 	actual := lightStrand.GetMappedLightIds()
 	if !stringSlicesEqual(expected, actual) {
 		t.Errorf("Expected a slice of all mapped light ids. Expected %v but received %v.\n", expected, actual)
@@ -78,21 +78,21 @@ func Test_GetMappedLightIds(t *testing.T) {
 
 func Test_GetUnmappedLightIds(t *testing.T) {
 	hueLights := make([]hue.Light, 4, 4)
-	hueLights[0].Id = "3"
-	hueLights[1].Id = "1"
-	hueLights[2].Id = "5"
-	hueLights[3].Id = "2"
+	hueLights[0].Id = "light3"
+	hueLights[1].Id = "light1"
+	hueLights[2].Id = "light5"
+	hueLights[3].Id = "light2"
 
 	stubHueAPI := &huetest.StubAPI{}
 	stubHueAPI.GetLightsError = nil
 	stubHueAPI.GetLightsReturn = hueLights
 
 	lightStrand := NewLightStrand(3, stubHueAPI)
-	lightStrand.mapLightToSocket("3", "1")
-	lightStrand.mapLightToSocket("2", "2")
-	lightStrand.mapLightToSocket("1", "3")
+	lightStrand.setSocketIdToLightId("1", "light3")
+	lightStrand.setSocketIdToLightId("2", "light2")
+	lightStrand.setSocketIdToLightId("3", "light1")
 
-	expected := []string{"5"}
+	expected := []string{"light5"}
 	actual, _ := lightStrand.GetUnmappedLightIds()
 	if !stringSlicesEqual(expected, actual) {
 		t.Errorf("Expected a slice of all unmapped light ids. Expected %v but received %v.\n", expected, actual)

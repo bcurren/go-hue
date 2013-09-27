@@ -8,14 +8,14 @@ import (
 type LightStrand struct {
 	api    hue.API
 	Length int
-	Lights map[string]string
+	Lights *TwoWayMap
 }
 
 func NewLightStrand(length int, api hue.API) *LightStrand {
 	var lightStrand LightStrand
 	lightStrand.api = api
 	lightStrand.Length = length
-	lightStrand.Lights = make(map[string]string)
+	lightStrand.Lights = NewTwoWayMap()
 
 	return &lightStrand
 }
@@ -41,7 +41,7 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func() string) error 
 		}
 
 		socketId := socketToLightFunc()
-		lg.mapLightToSocket(unmappedLightId, socketId)
+		lg.setSocketIdToLightId(socketId, unmappedLightId)
 
 		// Turn newly mapped light white
 		err = lg.api.SetLightState(unmappedLightId, white)
@@ -79,45 +79,14 @@ func (lg *LightStrand) GetUnmappedLightIds() ([]string, error) {
 }
 
 func (lg *LightStrand) GetMappedLightIds() []string {
-	lightIds := make([]string, 0, len(lg.Lights))
-	for _, lightId := range lg.Lights {
-		lightIds = append(lightIds, lightId)
-	}
-	return lightIds
+	return lg.Lights.GetValues()
 }
 
-func (lg *LightStrand) mapLightToSocket(lightId, socketId string) {
+func (lg *LightStrand) setSocketIdToLightId(socketId, lightId string) {
 	if !lg.validSocketId(socketId) {
 		panic("Invalid socket id.")
 	}
-	lg.Lights[socketId] = lightId
-}
-
-func (lg *LightStrand) getLightIdFromSocketId(socketId string) string {
-	if !lg.validSocketId(socketId) {
-		panic("Invalid socket id.")
-	}
-	return lg.Lights[socketId]
-}
-
-func (lg *LightStrand) mapHueLightIdToSocketId(hueLights []hue.Light) []hue.Light {
-	if hueLights == nil {
-		return nil
-	}
-
-	lightsWithSocketId := make([]hue.Light, 0, len(hueLights))
-
-	for _, light := range hueLights {
-		socketLightId := lg.Lights[light.Id]
-
-		// Skip any lights that haven't been registered with strand
-		if socketLightId != "" {
-			light.Id = socketLightId
-			lightsWithSocketId = append(lightsWithSocketId, light)
-		}
-	}
-
-	return lightsWithSocketId
+	lg.Lights.Set(socketId, lightId)
 }
 
 func (lg *LightStrand) validSocketId(socketId string) bool {
