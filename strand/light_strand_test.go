@@ -63,20 +63,7 @@ func Test_MapUnmappedLights(t *testing.T) {
 	}
 }
 
-func Test_GetMappedLightIds(t *testing.T) {
-	lightStrand := NewLightStrand(3, nil)
-	lightStrand.setSocketIdToLightId("1", "light1")
-	lightStrand.setSocketIdToLightId("2", "light2")
-	lightStrand.setSocketIdToLightId("3", "light3")
-
-	expected := []string{"light1", "light2", "light3"}
-	actual := lightStrand.GetMappedLightIds()
-	if !stringSlicesEqual(expected, actual) {
-		t.Errorf("Expected a slice of all mapped light ids. Expected %v but received %v.\n", expected, actual)
-	}
-}
-
-func Test_GetUnmappedLightIds(t *testing.T) {
+func Test_getUnmappedLightIds(t *testing.T) {
 	hueLights := make([]hue.Light, 4, 4)
 	hueLights[0].Id = "light3"
 	hueLights[1].Id = "light1"
@@ -88,12 +75,12 @@ func Test_GetUnmappedLightIds(t *testing.T) {
 	stubHueAPI.GetLightsReturn = hueLights
 
 	lightStrand := NewLightStrand(3, stubHueAPI)
-	lightStrand.setSocketIdToLightId("1", "light3")
-	lightStrand.setSocketIdToLightId("2", "light2")
-	lightStrand.setSocketIdToLightId("3", "light1")
+	lightStrand.Lights.Set("1", "light3")
+	lightStrand.Lights.Set("2", "light2")
+	lightStrand.Lights.Set("3", "light1")
 
 	expected := []string{"light5"}
-	actual, _ := lightStrand.GetUnmappedLightIds()
+	actual, _ := lightStrand.getUnmappedLightIds()
 	if !stringSlicesEqual(expected, actual) {
 		t.Errorf("Expected a slice of all unmapped light ids. Expected %v but received %v.\n", expected, actual)
 	}

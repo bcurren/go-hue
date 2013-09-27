@@ -1,6 +1,8 @@
 package strand
 
 import (
+	"errors"
+	"fmt"
 	"github.com/bcurren/go-hue"
 	"strconv"
 )
@@ -25,7 +27,7 @@ func (lg *LightStrand) SetDelegateAPI(api hue.API) {
 }
 
 func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func() string) error {
-	unmappedLightIds, err := lg.GetUnmappedLightIds()
+	unmappedLightIds, err := lg.getUnmappedLightIds()
 	if err != nil {
 		return err
 	}
@@ -41,7 +43,10 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func() string) error 
 		}
 
 		socketId := socketToLightFunc()
-		lg.setSocketIdToLightId(socketId, unmappedLightId)
+		if !lg.validSocketId(socketId) {
+			return errors.New(fmt.Sprintf("Invalid socket id provided %s.", socketId))
+		}
+		lg.Lights.Set(socketId, unmappedLightId)
 
 		// Turn newly mapped light white
 		err = lg.api.SetLightState(unmappedLightId, white)
@@ -53,13 +58,13 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func() string) error 
 	return nil
 }
 
-func (lg *LightStrand) GetUnmappedLightIds() ([]string, error) {
+func (lg *LightStrand) getUnmappedLightIds() ([]string, error) {
 	allHueLights, err := lg.api.GetLights()
 	if err != nil {
 		return nil, err
 	}
 
-	allMappedLightIds := lg.GetMappedLightIds()
+	allMappedLightIds := lg.Lights.GetValues()
 
 	unmappedLights := make([]string, 0, 5)
 	for _, hueLight := range allHueLights {
@@ -76,17 +81,6 @@ func (lg *LightStrand) GetUnmappedLightIds() ([]string, error) {
 	}
 
 	return unmappedLights, nil
-}
-
-func (lg *LightStrand) GetMappedLightIds() []string {
-	return lg.Lights.GetValues()
-}
-
-func (lg *LightStrand) setSocketIdToLightId(socketId, lightId string) {
-	if !lg.validSocketId(socketId) {
-		panic("Invalid socket id.")
-	}
-	lg.Lights.Set(socketId, lightId)
 }
 
 func (lg *LightStrand) validSocketId(socketId string) bool {
