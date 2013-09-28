@@ -1,19 +1,20 @@
 package multi
 
 import (
+	"fmt"
 	"github.com/bcurren/go-hue"
 	"time"
 )
 
 type rGetLights struct {
 	lights []hue.Light
-	err error
+	err    error
 }
 
 type rGetNewLights struct {
-	lights []hue.Light
+	lights   []hue.Light
 	lastScan time.Time
-	err error
+	err      error
 }
 
 type rSearchForNewLights struct {
@@ -38,16 +39,16 @@ func gGetLights(c chan rGetLights, api hue.API) {
 func lGetLights(c chan rGetLights, nResponses int) ([]hue.Light, error) {
 	lErrors := make([]error, 0, 1)
 	lLights := make([][]hue.Light, 0, nResponses)
-	
+
 	for i := 0; i < nResponses; i++ {
-		result := <- c
+		result := <-c
 		if result.err != nil {
 			lErrors = append(lErrors, result.err)
 		} else {
 			lLights = append(lLights, result.lights)
 		}
 	}
-	
+
 	return mergeLights(lLights), mergeErrors(lErrors)
 }
 
@@ -70,18 +71,18 @@ func lGetNewLights(c chan rGetNewLights, nResponses int) ([]hue.Light, time.Time
 	lErrors := make([]error, 0, 1)
 	lLights := make([][]hue.Light, 0, nResponses)
 	lLastScan := make([]time.Time, 0, nResponses)
-	
+
 	for i := 0; i < nResponses; i++ {
-		result := <- c
+		result := <-c
 		if result.err != nil {
 			lErrors = append(lErrors, result.err)
-		} 
+		}
 		if result.lights != nil {
 			lLights = append(lLights, result.lights)
 		}
 		lLastScan = append(lLastScan, result.lastScan)
 	}
-	
+
 	return mergeLights(lLights), mergeTime(lLastScan), mergeErrors(lErrors)
 }
 
@@ -102,14 +103,14 @@ func gSearchForNewLights(c chan rSearchForNewLights, api hue.API) {
 
 func lSearchForNewLights(c chan rSearchForNewLights, nResponses int) error {
 	lErrors := make([]error, 0, 1)
-	
+
 	for i := 0; i < nResponses; i++ {
-		result := <- c
+		result := <-c
 		if result.err != nil {
 			lErrors = append(lErrors, result.err)
-		} 
+		}
 	}
-	
+
 	return mergeErrors(lErrors)
 }
 
@@ -148,14 +149,14 @@ func mergeLights(lLights [][]hue.Light) []hue.Light {
 	for _, lights := range lLights {
 		countOfLights += len(lights)
 	}
-	
+
 	mLights := make([]hue.Light, countOfLights)
 	copyTo := 0
 	for _, lights := range lLights {
 		copy(mLights[copyTo:], lights)
 		copyTo += len(lights)
 	}
-	
+
 	return mLights
 }
 
@@ -163,9 +164,9 @@ func mergeErrors(lErrors []error) error {
 	if lErrors == nil || len(lErrors) <= 0 {
 		return nil
 	}
-	
+
 	apiErrorDetails := make([]hue.APIErrorDetail, 0, len(lErrors))
-	
+
 	// Collect all error details and exit if non API error found
 	// TODO: Collect all non API Errors for an array of errors return type
 	for _, err := range lErrors {
@@ -177,7 +178,6 @@ func mergeErrors(lErrors []error) error {
 			return err
 		}
 	}
-	
 	return &hue.APIError{apiErrorDetails}
 }
 
@@ -191,4 +191,14 @@ func mapLightIds(api hue.API, lLights []hue.Light) []hue.Light {
 
 func (m *MultiAPI) findAPIAndLightId(lightId string) (hue.API, string, error) {
 	return m.apis[0], lightId, nil
+}
+
+func createResourceNotAvailableAPIError(resourceId, address string) error {
+	apiError := &hue.APIError{}
+	apiError.Errors = make([]hue.APIErrorDetail, 1, 1)
+	apiError.Errors[0].Type = hue.ResourceNotAvailableErrorType
+	apiError.Errors[0].Address = address
+	apiError.Errors[0].Description = fmt.Sprintf("resource, %s, not available", resourceId)
+
+	return apiError
 }

@@ -97,7 +97,7 @@ func (lg *LightStrand) mapLightIdsToSocketIds(lights []hue.Light) []hue.Light {
 }
 
 func createResourceNotAvailableAPIError(resourceId, address string) error {
-	apiError := hue.APIError{}
+	apiError := &hue.APIError{}
 	apiError.Errors = make([]hue.APIErrorDetail, 1, 1)
 	apiError.Errors[0].Type = hue.ResourceNotAvailableErrorType
 	apiError.Errors[0].Address = address
