@@ -117,6 +117,8 @@ func (lg *LightStrand) validSocketId(socketId string) bool {
 
 func createWhiteLightState() *hue.LightState {
 	white := &hue.LightState{}
+	white.On = new(bool)
+	*white.On = true
 	white.ColorTemp = new(uint16)
 	*white.ColorTemp = 1800
 
@@ -125,6 +127,8 @@ func createWhiteLightState() *hue.LightState {
 
 func createRedLightState() *hue.LightState {
 	red := &hue.LightState{}
+	red.On = new(bool)
+	*red.On = true
 	red.Brightness = new(uint8)
 	*red.Brightness = 255
 	red.Hue = new(uint16)
