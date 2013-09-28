@@ -3,6 +3,8 @@ package multi
 import (
 	"fmt"
 	"github.com/bcurren/go-hue"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -26,17 +28,17 @@ type rSearchForNewLights struct {
 func (m *MultiAPI) GetLights() ([]hue.Light, error) {
 	c := make(chan rGetLights)
 	for _, api := range m.apis {
-		go gGetLights(c, api)
+		go m.gGetLights(c, api)
 	}
-	return lGetLights(c, len(m.apis))
+	return m.lGetLights(c, len(m.apis))
 }
 
-func gGetLights(c chan rGetLights, api hue.API) {
+func (m *MultiAPI) gGetLights(c chan rGetLights, api hue.API) {
 	lights, err := api.GetLights()
-	c <- rGetLights{mapLightIds(api, lights), err}
+	c <- rGetLights{m.mapLightIds(api, lights), err}
 }
 
-func lGetLights(c chan rGetLights, nResponses int) ([]hue.Light, error) {
+func (m *MultiAPI) lGetLights(c chan rGetLights, nResponses int) ([]hue.Light, error) {
 	lErrors := make([]error, 0, 1)
 	lLights := make([][]hue.Light, 0, nResponses)
 
@@ -57,17 +59,17 @@ func lGetLights(c chan rGetLights, nResponses int) ([]hue.Light, error) {
 func (m *MultiAPI) GetNewLights() ([]hue.Light, time.Time, error) {
 	c := make(chan rGetNewLights)
 	for _, api := range m.apis {
-		go gGetNewLights(c, api)
+		go m.gGetNewLights(c, api)
 	}
-	return lGetNewLights(c, len(m.apis))
+	return m.lGetNewLights(c, len(m.apis))
 }
 
-func gGetNewLights(c chan rGetNewLights, api hue.API) {
+func (m *MultiAPI) gGetNewLights(c chan rGetNewLights, api hue.API) {
 	lights, lastScan, err := api.GetNewLights()
-	c <- rGetNewLights{mapLightIds(api, lights), lastScan, err}
+	c <- rGetNewLights{m.mapLightIds(api, lights), lastScan, err}
 }
 
-func lGetNewLights(c chan rGetNewLights, nResponses int) ([]hue.Light, time.Time, error) {
+func (m *MultiAPI) lGetNewLights(c chan rGetNewLights, nResponses int) ([]hue.Light, time.Time, error) {
 	lErrors := make([]error, 0, 1)
 	lLights := make([][]hue.Light, 0, nResponses)
 	lLastScan := make([]time.Time, 0, nResponses)
@@ -91,17 +93,17 @@ func lGetNewLights(c chan rGetNewLights, nResponses int) ([]hue.Light, time.Time
 func (m *MultiAPI) SearchForNewLights() error {
 	c := make(chan rSearchForNewLights)
 	for _, api := range m.apis {
-		go gSearchForNewLights(c, api)
+		go m.gSearchForNewLights(c, api)
 	}
-	return lSearchForNewLights(c, len(m.apis))
+	return m.lSearchForNewLights(c, len(m.apis))
 }
 
-func gSearchForNewLights(c chan rSearchForNewLights, api hue.API) {
+func (m *MultiAPI) gSearchForNewLights(c chan rSearchForNewLights, api hue.API) {
 	err := api.SearchForNewLights()
 	c <- rSearchForNewLights{err}
 }
 
-func lSearchForNewLights(c chan rSearchForNewLights, nResponses int) error {
+func (m *MultiAPI) lSearchForNewLights(c chan rSearchForNewLights, nResponses int) error {
 	lErrors := make([]error, 0, 1)
 
 	for i := 0; i < nResponses; i++ {
@@ -117,7 +119,7 @@ func lSearchForNewLights(c chan rSearchForNewLights, nResponses int) error {
 // GetLightAttributes() is same as hue.User.GetLightAttributes() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) GetLightAttributes(lightId string) (*hue.LightAttributes, error) {
-	api, newLightId, err := m.findAPIAndLightId(lightId)
+	api, newLightId, err := m.findAPIAndLightId(lightId, fmt.Sprintf("/lights/%s", lightId))
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +129,7 @@ func (m *MultiAPI) GetLightAttributes(lightId string) (*hue.LightAttributes, err
 // SetLightName() is same as hue.User.SetLightName() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) SetLightName(lightId string, name string) error {
-	api, newLightId, err := m.findAPIAndLightId(lightId)
+	api, newLightId, err := m.findAPIAndLightId(lightId, fmt.Sprintf("/lights/%s", lightId))
 	if err != nil {
 		return err
 	}
@@ -137,7 +139,7 @@ func (m *MultiAPI) SetLightName(lightId string, name string) error {
 // SetLightState() is same as hue.User.SetLightState() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) SetLightState(lightId string, state *hue.LightState) error {
-	api, newLightId, err := m.findAPIAndLightId(lightId)
+	api, newLightId, err := m.findAPIAndLightId(lightId, fmt.Sprintf("/lights/%s/state", lightId))
 	if err != nil {
 		return err
 	}
@@ -185,12 +187,46 @@ func mergeTime(lTime []time.Time) time.Time {
 	return lTime[0]
 }
 
-func mapLightIds(api hue.API, lLights []hue.Light) []hue.Light {
-	return lLights
+func (m *MultiAPI) mapLightIds(api hue.API, lights []hue.Light) []hue.Light {
+	for i, light := range lights {
+		lights[i].Id = m.mapAPIAndLightId(api, light.Id)
+	}
+	return lights
 }
 
-func (m *MultiAPI) findAPIAndLightId(lightId string) (hue.API, string, error) {
-	return m.apis[0], lightId, nil
+func (m *MultiAPI) apiToId(api hue.API) string {
+	for i, checkApi := range m.apis {
+		if api == checkApi {
+			return strconv.Itoa(i)
+		}
+	}
+	return ""
+}
+
+func (m *MultiAPI) idToApi(id string) hue.API {
+	idAsInt, err := strconv.Atoi(id)
+	if err != nil {
+		return nil
+	}
+	if idAsInt < 0 || idAsInt >= len(m.apis) {
+		return nil
+	}
+
+	return m.apis[idAsInt]
+}
+
+func (m *MultiAPI) mapAPIAndLightId(api hue.API, lightId string) string {
+	return fmt.Sprintf("%s#%s", m.apiToId(api), lightId)
+}
+
+func (m *MultiAPI) findAPIAndLightId(lightId, address string) (hue.API, string, error) {
+	splitLightId := strings.Split(lightId, "#")
+	api := m.idToApi(splitLightId[0])
+	if api == nil {
+		return nil, "", createResourceNotAvailableAPIError(lightId, address)
+	}
+
+	return api, splitLightId[1], nil
 }
 
 func createResourceNotAvailableAPIError(resourceId, address string) error {
