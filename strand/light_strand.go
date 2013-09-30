@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/bcurren/go-hue"
 	"strconv"
+	"strings"
 )
 
 // Structure that holds the mapping from socket id to light id. This implements
@@ -39,7 +40,7 @@ func (lg *LightStrand) SetDelegateAPI(api hue.API) {
 // 2. For each unmapped light
 //   a. Turn the bulb red
 //   b. Call socketToLightFunc - The implementation should return the socket id for
-//      the unmapped light
+//      the unmapped light. If 'x' returned, skip mapping the bulb.
 //   c. Map the bulb to the socket id
 //   d. Turn the white bulb and continue
 //
@@ -61,11 +62,14 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func() string) error 
 			return err
 		}
 
+		// Update the map. Skip socket ids 'x'.
 		socketId := socketToLightFunc()
-		if !lg.validSocketId(socketId) {
-			return errors.New(fmt.Sprintf("Invalid socket id provided %s.", socketId))
+		if "X" != strings.ToUpper(socketId) || socketId == "" {
+			if !lg.validSocketId(socketId) {
+				return errors.New(fmt.Sprintf("Invalid socket id provided %s.", socketId))
+			}
+			lg.Lights.Set(socketId, unmappedLightId)
 		}
-		lg.Lights.Set(socketId, unmappedLightId)
 
 		// Turn newly mapped light white
 		err = lg.api.SetLightState(unmappedLightId, white)

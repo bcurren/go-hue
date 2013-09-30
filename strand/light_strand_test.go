@@ -27,7 +27,7 @@ func Test_MapUnmappedLights(t *testing.T) {
 	stubHueAPI.GetLightsError = nil
 	stubHueAPI.GetLightsReturn = hueLights
 
-	lightStrand := NewLightStrand(3, stubHueAPI)
+	lightStrand := NewLightStrand(1, stubHueAPI)
 
 	countTimesCalled := 0
 	err := lightStrand.MapUnmappedLights(func() string {
@@ -60,6 +60,27 @@ func Test_MapUnmappedLights(t *testing.T) {
 	}
 	if stubHueAPI.SetLightStateParamLightState.ColorTemp == nil {
 		t.Error("Should have set the state.")
+	}
+}
+
+func Test_MapUnmappedLightsSkipXSocketIds(t *testing.T) {
+	hueLights := make([]hue.Light, 1, 1)
+	hueLights[0].Id = "3"
+
+	stubHueAPI := &huetest.StubAPI{}
+	stubHueAPI.GetLightsError = nil
+	stubHueAPI.GetLightsReturn = hueLights
+
+	lightStrand := NewLightStrand(3, stubHueAPI)
+	err := lightStrand.MapUnmappedLights(func() string {
+		return "x"
+	})
+	if err != nil {
+		t.Fatal("Error returned when mapping")
+	}
+
+	if lightStrand.Lights.Length() != 0 {
+		t.Error("Should skip mapping when socket id is 'x'.")
 	}
 }
 

@@ -101,7 +101,7 @@ func Test_GetLightAttributesError(t *testing.T) {
 	if err == nil {
 		t.Fatal("Error for invalid socket id should be returned.")
 	}
-	apiError, ok := err.(hue.APIError)
+	apiError, ok := err.(*hue.APIError)
 	if !ok {
 		t.Fatal("Should return APIError for invalid socket id.")
 	}
