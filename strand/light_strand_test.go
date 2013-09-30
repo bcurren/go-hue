@@ -32,7 +32,7 @@ func Test_MapUnmappedLights(t *testing.T) {
 	countTimesCalled := 0
 	err := lightStrand.MapUnmappedLights(func(lightId string) string {
 		countTimesCalled += 1
-		
+
 		// Callback param is light id
 		if lightId != "3" {
 			t.Error("Callback parameter should have lightId 3.")
