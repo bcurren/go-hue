@@ -30,9 +30,13 @@ func Test_MapUnmappedLights(t *testing.T) {
 	lightStrand := NewLightStrand(1, stubHueAPI)
 
 	countTimesCalled := 0
-	err := lightStrand.MapUnmappedLights(func() string {
+	err := lightStrand.MapUnmappedLights(func(lightId string) string {
 		countTimesCalled += 1
-
+		
+		// Callback param is light id
+		if lightId != "3" {
+			t.Error("Callback parameter should have lightId 3.")
+		}
 		// Should have set hue light to red
 		if stubHueAPI.SetLightStateParamLightId != "3" {
 			t.Error("Should have set light 3.")
@@ -72,7 +76,7 @@ func Test_MapUnmappedLightsSkipXSocketIds(t *testing.T) {
 	stubHueAPI.GetLightsReturn = hueLights
 
 	lightStrand := NewLightStrand(3, stubHueAPI)
-	err := lightStrand.MapUnmappedLights(func() string {
+	err := lightStrand.MapUnmappedLights(func(string) string {
 		return "x"
 	})
 	if err != nil {

@@ -46,7 +46,7 @@ func (lg *LightStrand) SetDelegateAPI(api hue.API) {
 //
 // This should be used to interactively prompt a person to map a light to a position
 // in the strand.
-func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func() string) error {
+func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func(string) string) error {
 	unmappedLightIds, err := lg.getUnmappedLightIds()
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func() string) error 
 		}
 
 		// Update the map. Skip socket ids 'x'.
-		socketId := socketToLightFunc()
+		socketId := socketToLightFunc(unmappedLightId)
 		if "X" != strings.ToUpper(socketId) || socketId == "" {
 			if !lg.validSocketId(socketId) {
 				return errors.New(fmt.Sprintf("Invalid socket id provided %s.", socketId))
