@@ -71,7 +71,7 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func(string) string) 
 		socketId := socketToLightFunc(unmappedLightId)
 		if "X" != strings.ToUpper(socketId) || socketId == "" {
 			if !lg.validSocketId(socketId) {
-				return errors.New(fmt.Sprintf("Invalid socket id provided %s.", socketId))
+				return errors.New(fmt.Sprintf("Invalid socket id provided '%s'.", socketId))
 			}
 			lg.Lights.Set(socketId, unmappedLightId)
 		}
