@@ -48,17 +48,19 @@ func (lg *LightStrand) IsMappedSocketId(socketId string) bool {
 // An interactive way of mapping all unmapped light bulbs on the hue bridge. This
 // function does the following:
 //
-// 1. Turn all lights white
+// 1. Turn all lights normal state
 // 2. For each unmapped light
-//   a. Turn the bulb red
+//   a. Turn the bulb selectedState
 //   b. Call socketToLightFunc - The implementation should return the socket id for
 //      the unmapped light. If 'x' returned, skip mapping the bulb.
 //   c. Map the bulb to the socket id
-//   d. Turn the white bulb and continue
+//   d. Turn the buld normal state and continue
 //
 // This should be used to interactively prompt a person to map a light to a position
 // in the strand.
-func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func(string) string) error {
+func (lg *LightStrand) MapUnmappedLights(normalState, selectedState *hue.LightState,
+	socketToLightFunc func(string) string) error {
+
 	lights, err := lg.API.GetLights()
 	if err != nil {
 		return err
@@ -66,12 +68,14 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func(string) string) 
 
 	lg.cleanInvalidMappedLightIds(lights)
 	unmappedLightIds := lg.getUnmappedLightIds(lights)
-	white := createWhiteLightState()
-	red := createRedLightState()
+	err = lg.API.SetGroupState(hue.AllLightsGroupId, normalState)
+	if err != nil {
+		return err
+	}
 
 	for _, unmappedLightId := range unmappedLightIds {
-		// Turn new unmapped light red
-		err = lg.API.SetLightState(unmappedLightId, red)
+		// Turn new unmapped light selected state
+		err = lg.API.SetLightState(unmappedLightId, selectedState)
 		if err != nil {
 			return err
 		}
@@ -85,13 +89,18 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func(string) string) 
 			lg.Lights.Set(socketId, unmappedLightId)
 		}
 
-		// Turn newly mapped light white
-		err = lg.API.SetLightState(unmappedLightId, white)
+		// Turn newly mapped light to normal color
+		err = lg.API.SetLightState(unmappedLightId, normalState)
 		if err != nil {
 			return err
 		}
 	}
-
+	
+	err = lg.API.SetGroupState(hue.AllLightsGroupId, normalState)
+	if err != nil {
+		return err
+	}
+	
 	return nil
 }
 
@@ -147,28 +156,4 @@ func (lg *LightStrand) validSocketId(socketId string) bool {
 	}
 
 	return true
-}
-
-func createWhiteLightState() *hue.LightState {
-	white := &hue.LightState{}
-	white.On = new(bool)
-	*white.On = true
-	white.ColorTemp = new(uint16)
-	*white.ColorTemp = 1800
-
-	return white
-}
-
-func createRedLightState() *hue.LightState {
-	red := &hue.LightState{}
-	red.On = new(bool)
-	*red.On = true
-	red.Brightness = new(uint8)
-	*red.Brightness = 255
-	red.Hue = new(uint16)
-	*red.Hue = 65535
-	red.Saturation = new(uint8)
-	*red.Saturation = 255
-
-	return red
 }
