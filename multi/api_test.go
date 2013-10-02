@@ -46,6 +46,19 @@ func Test_SearchForNewLights(t *testing.T) {
 	}
 }
 
+func Test_SetGroupState(t *testing.T) {
+	multi, _, _ := newStubMultiAPI()
+	
+	state := &hue.LightState{}
+	state.On = new(bool)
+	*state.On = true
+	
+	err := multi.SetGroupState(hue.AllLightsGroupId, state)
+	if err != nil {
+		t.Fatal("Error was returned.", err)
+	}
+}
+
 func newStubMultiAPI() (*MultiAPI, *huetest.StubAPI, *huetest.StubAPI) {
 	api1 := &huetest.StubAPI{}
 	api2 := &huetest.StubAPI{}

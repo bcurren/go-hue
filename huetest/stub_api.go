@@ -45,6 +45,11 @@ type StubAPI struct {
 	SetLightStateError           error
 	SetLightStateParamLightId    string
 	SetLightStateParamLightState *hue.LightState
+
+	// Stub SetGroupState()
+	SetGroupStateError           error
+	SetGroupStateParamGroupId    string
+	SetGroupStateParamLightState *hue.LightState
 }
 
 // Stub version of GetLights. This function just returns GetLightsReturn and
@@ -89,4 +94,13 @@ func (s *StubAPI) SetLightState(lightId string, state *hue.LightState) error {
 	s.SetLightStateParamLightId = lightId
 	s.SetLightStateParamLightState = state
 	return s.SetLightStateError
+}
+
+// Stub version of SetGroupState. This function just returns SetGroupStateError in StubAPI struct.
+// It will also set SetGroupStateGroupId to the value of groupID parameter and
+// SetGroupStateParamLightState to the value of the state parameter.
+func (s *StubAPI) SetGroupState(lightId string, state *hue.LightState) error {
+	s.SetGroupStateParamGroupId = lightId
+	s.SetGroupStateParamLightState = state
+	return s.SetGroupStateError
 }

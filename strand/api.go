@@ -57,6 +57,11 @@ func (lg *LightStrand) SetLightState(socketId string, state *hue.LightState) err
 	return lg.API.SetLightState(lightId, state)
 }
 
+// SetGroupState() is same as hue.User.SetGroupState().
+func (lg *LightStrand) SetGroupState(groupId string, state *hue.LightState) error {
+	return lg.API.SetGroupState(groupId, state)
+}
+
 func (lg *LightStrand) getLightIdFromSocketId(socketId, address string) (string, error) {
 	lightId := lg.Lights.GetValue(socketId)
 	if lightId == "" {

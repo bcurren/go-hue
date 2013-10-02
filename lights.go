@@ -97,6 +97,17 @@ func (u *User) SetLightState(lightId string, state *LightState) error {
 	return nil
 }
 
+func (u *User) SetGroupState(groupId string, state *LightState) error {
+	url := fmt.Sprintf("/api/%s/groups/%s/action", u.Username, groupId)
+
+	_, err := u.Bridge.client.Put(url, &state)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func parseLights(lightsMap map[string]interface{}) ([]Light, error) {
 	lights := make([]Light, 0, 10)
 

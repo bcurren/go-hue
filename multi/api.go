@@ -23,6 +23,10 @@ type rSearchForNewLights struct {
 	err error
 }
 
+type rSetGroupState struct {
+	err error
+}
+
 // GetLights() is same as hue.User.GetLights() except all light ids are mapped to
 // socket ids.
 func (m *MultiAPI) GetLights() ([]hue.Light, error) {
@@ -136,14 +140,42 @@ func (m *MultiAPI) SetLightName(lightId string, name string) error {
 	return api.SetLightName(newLightId, name)
 }
 
-// SetLightState() is same as hue.User.SetLightState() except all light ids are mapped to
-// socket ids.
+// SetLightState() is same as hue.User.SetLightState() expect the call is routed to the correct
+// bridge based on the augmented id.
 func (m *MultiAPI) SetLightState(lightId string, state *hue.LightState) error {
 	api, newLightId, err := m.findAPIAndLightId(lightId, fmt.Sprintf("/lights/%s/state", lightId))
 	if err != nil {
 		return err
 	}
 	return api.SetLightState(newLightId, state)
+}
+
+// SetGroupState() is same as hue.User.SetGroupState() except it is run across all apis in
+// parallet and results are merged together.
+func (m *MultiAPI) SetGroupState(groupId string, state *hue.LightState) error {
+	c := make(chan rSetGroupState)
+	for _, api := range m.APIs {
+		go m.gSetGroupState(c, api, groupId, state)
+	}
+	return m.lSetGroupState(c, len(m.APIs))
+}
+
+func (m *MultiAPI) gSetGroupState(c chan rSetGroupState, api hue.API, groupId string, state *hue.LightState) {
+	err := api.SetGroupState(groupId, state)
+	c <- rSetGroupState{err}
+}
+
+func (m *MultiAPI) lSetGroupState(c chan rSetGroupState, nResponses int) error {
+	lErrors := make([]error, 0, 1)
+
+	for i := 0; i < nResponses; i++ {
+		result := <-c
+		if result.err != nil {
+			lErrors = append(lErrors, result.err)
+		}
+	}
+
+	return mergeErrors(lErrors)
 }
 
 func mergeLights(lLights [][]hue.Light) []hue.Light {

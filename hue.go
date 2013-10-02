@@ -13,12 +13,12 @@ type API interface {
 	GetLightAttributes(lightId string) (*LightAttributes, error)
 	SetLightName(lightId string, name string) error
 	SetLightState(lightId string, state *LightState) error
+	SetGroupState(groupId string, state *LightState) error
 
 	// TODO: Groups API Methods
 	// GetGroups() ([]Group, error)
 	// GetGroupAttributes(groupId string) (*GroupAttributes, error)
 	// SetGroupAttributes(groupId string, attr *GroupAttributes) error
-	// SetGroupState(groupId string, state *GroupState) error
 	// CreateGroup - not supported in current hue api
 	// DeleteGroup - not supported in current hue api
 
@@ -29,6 +29,9 @@ type API interface {
 	// SetScheduleAttributes(scheduleId string, attr ScheduleAttributes)
 	// DeleteSchedule(scheduleId string) error
 }
+
+// The group id for all lights on a bridge
+const AllLightsGroupId = "0"
 
 type AdminAPI interface {
 	GetConfiguration() (*Configuration, error)

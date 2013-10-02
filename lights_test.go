@@ -130,3 +130,19 @@ func Test_SetLightState(t *testing.T) {
 	assertEqual(t, "/api/username1/lights/light1/state", stubServer.uri, "request uri")
 	assertEqual(t, `{"on":true}`, stubServer.requestJson, "request json")
 }
+
+func Test_SetGroupState(t *testing.T) {
+	user, stubServer := NewStubUser("put/username1/lights/light1/state.json", "username1")
+
+	lightState := &LightState{}
+	lightState.On = new(bool)
+	*lightState.On = true
+	err := user.SetGroupState("group1", lightState)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqual(t, "PUT", stubServer.method, "method is put")
+	assertEqual(t, "/api/username1/groups/group1/action", stubServer.uri, "request uri")
+	assertEqual(t, `{"on":true}`, stubServer.requestJson, "request json")
+}
