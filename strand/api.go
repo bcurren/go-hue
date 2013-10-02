@@ -10,21 +10,21 @@ import (
 // GetLights() is same as hue.User.GetLights() except all light ids are mapped to
 // socket ids.
 func (lg *LightStrand) GetLights() ([]hue.Light, error) {
-	lights, err := lg.api.GetLights()
+	lights, err := lg.API.GetLights()
 	return lg.mapLightIdsToSocketIds(lights), err
 }
 
 // GetNewLights() is same as hue.User.GetNewLights() except all light ids are mapped to
 // socket ids.
 func (lg *LightStrand) GetNewLights() ([]hue.Light, time.Time, error) {
-	lights, lastUpdated, err := lg.api.GetNewLights()
+	lights, lastUpdated, err := lg.API.GetNewLights()
 	return lg.mapLightIdsToSocketIds(lights), lastUpdated, err
 }
 
 // SearchForNewLights() is same as hue.User.SearchForNewLights() except all light ids are mapped to
 // socket ids.
 func (lg *LightStrand) SearchForNewLights() error {
-	return lg.api.SearchForNewLights()
+	return lg.API.SearchForNewLights()
 }
 
 // GetLightAttributes() is same as hue.User.GetLightAttributes() except all light ids are mapped to
@@ -34,7 +34,7 @@ func (lg *LightStrand) GetLightAttributes(socketId string) (*hue.LightAttributes
 	if err != nil {
 		return nil, err
 	}
-	return lg.api.GetLightAttributes(lightId)
+	return lg.API.GetLightAttributes(lightId)
 }
 
 // SetLightName() is same as hue.User.SetLightName() except all light ids are mapped to
@@ -44,7 +44,7 @@ func (lg *LightStrand) SetLightName(socketId string, name string) error {
 	if err != nil {
 		return err
 	}
-	return lg.api.SetLightName(lightId, name)
+	return lg.API.SetLightName(lightId, name)
 }
 
 // SetLightState() is same as hue.User.SetLightState() except all light ids are mapped to
@@ -54,7 +54,7 @@ func (lg *LightStrand) SetLightState(socketId string, state *hue.LightState) err
 	if err != nil {
 		return err
 	}
-	return lg.api.SetLightState(lightId, state)
+	return lg.API.SetLightState(lightId, state)
 }
 
 func (lg *LightStrand) getLightIdFromSocketId(socketId, address string) (string, error) {

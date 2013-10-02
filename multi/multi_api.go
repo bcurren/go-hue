@@ -5,15 +5,15 @@ import (
 )
 
 type MultiAPI struct {
-	apis []hue.API
+	APIs []hue.API
 }
 
 func NewMultiAPI() *MultiAPI {
 	multi := &MultiAPI{}
-	multi.apis = make([]hue.API, 0, 2)
+	multi.APIs = make([]hue.API, 0, 2)
 	return multi
 }
 
 func (m *MultiAPI) AddAPI(api hue.API) {
-	m.apis = append(m.apis, api)
+	m.APIs = append(m.APIs, api)
 }

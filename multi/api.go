@@ -27,10 +27,10 @@ type rSearchForNewLights struct {
 // socket ids.
 func (m *MultiAPI) GetLights() ([]hue.Light, error) {
 	c := make(chan rGetLights)
-	for _, api := range m.apis {
+	for _, api := range m.APIs {
 		go m.gGetLights(c, api)
 	}
-	return m.lGetLights(c, len(m.apis))
+	return m.lGetLights(c, len(m.APIs))
 }
 
 func (m *MultiAPI) gGetLights(c chan rGetLights, api hue.API) {
@@ -58,10 +58,10 @@ func (m *MultiAPI) lGetLights(c chan rGetLights, nResponses int) ([]hue.Light, e
 // socket ids.
 func (m *MultiAPI) GetNewLights() ([]hue.Light, time.Time, error) {
 	c := make(chan rGetNewLights)
-	for _, api := range m.apis {
+	for _, api := range m.APIs {
 		go m.gGetNewLights(c, api)
 	}
-	return m.lGetNewLights(c, len(m.apis))
+	return m.lGetNewLights(c, len(m.APIs))
 }
 
 func (m *MultiAPI) gGetNewLights(c chan rGetNewLights, api hue.API) {
@@ -92,10 +92,10 @@ func (m *MultiAPI) lGetNewLights(c chan rGetNewLights, nResponses int) ([]hue.Li
 // socket ids.
 func (m *MultiAPI) SearchForNewLights() error {
 	c := make(chan rSearchForNewLights)
-	for _, api := range m.apis {
+	for _, api := range m.APIs {
 		go m.gSearchForNewLights(c, api)
 	}
-	return m.lSearchForNewLights(c, len(m.apis))
+	return m.lSearchForNewLights(c, len(m.APIs))
 }
 
 func (m *MultiAPI) gSearchForNewLights(c chan rSearchForNewLights, api hue.API) {
@@ -195,7 +195,7 @@ func (m *MultiAPI) mapLightIds(api hue.API, lights []hue.Light) []hue.Light {
 }
 
 func (m *MultiAPI) apiToId(api hue.API) string {
-	for i, checkApi := range m.apis {
+	for i, checkApi := range m.APIs {
 		if api == checkApi {
 			return strconv.Itoa(i)
 		}
@@ -208,11 +208,11 @@ func (m *MultiAPI) idToApi(id string) hue.API {
 	if err != nil {
 		return nil
 	}
-	if idAsInt < 0 || idAsInt >= len(m.apis) {
+	if idAsInt < 0 || idAsInt >= len(m.APIs) {
 		return nil
 	}
 
-	return m.apis[idAsInt]
+	return m.APIs[idAsInt]
 }
 
 func (m *MultiAPI) mapAPIAndLightId(api hue.API, lightId string) string {

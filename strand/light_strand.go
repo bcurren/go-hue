@@ -13,7 +13,7 @@ import (
 // Structure that holds the mapping from socket id to light id. This implements
 // the hue.API interface so it can be used as a drop in replacement.
 type LightStrand struct {
-	api    hue.API
+	API    hue.API
 	Length int
 	Lights *TwoWayMap
 }
@@ -21,16 +21,21 @@ type LightStrand struct {
 // Create a new light strand with the given length and hue.API to delegate to.
 func NewLightStrand(length int, api hue.API) *LightStrand {
 	var lightStrand LightStrand
-	lightStrand.api = api
+	lightStrand.API = api
 	lightStrand.Length = length
 	lightStrand.Lights = NewTwoWayMap()
 
 	return &lightStrand
 }
 
-// Change the hue.API delegate.
-func (lg *LightStrand) SetDelegateAPI(api hue.API) {
-	lg.api = api
+// Create a new light strand with the given length and hue.API to delegate to.
+func NewLightStrandWithMap(length int, api hue.API, initMap map[string]string) *LightStrand {
+	var lightStrand LightStrand
+	lightStrand.API = api
+	lightStrand.Length = length
+	lightStrand.Lights = LoadTwoWayMap(initMap)
+
+	return &lightStrand
 }
 
 // An interactive way of mapping all unmapped light bulbs on the hue bridge. This
@@ -57,7 +62,7 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func(string) string) 
 
 	for _, unmappedLightId := range unmappedLightIds {
 		// Turn new unmapped light red
-		err = lg.api.SetLightState(unmappedLightId, red)
+		err = lg.API.SetLightState(unmappedLightId, red)
 		if err != nil {
 			return err
 		}
@@ -72,7 +77,7 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func(string) string) 
 		}
 
 		// Turn newly mapped light white
-		err = lg.api.SetLightState(unmappedLightId, white)
+		err = lg.API.SetLightState(unmappedLightId, white)
 		if err != nil {
 			return err
 		}
@@ -81,8 +86,12 @@ func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func(string) string) 
 	return nil
 }
 
+func (lg *LightStrand) GetMap() map[string]string {
+	return lg.Lights.Normal
+}
+
 func (lg *LightStrand) getUnmappedLightIds() ([]string, error) {
-	allHueLights, err := lg.api.GetLights()
+	allHueLights, err := lg.API.GetLights()
 	if err != nil {
 		return nil, err
 	}
