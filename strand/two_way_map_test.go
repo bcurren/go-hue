@@ -124,3 +124,31 @@ func Test_GetKeys(t *testing.T) {
 			expectedKeys, actualKeys)
 	}
 }
+
+func Test_DeleteWithValue(t *testing.T) {
+	tMap := NewTwoWayMap()
+	tMap.Set("key1", "val1")
+	tMap.Set("key2", "val2")
+
+	didDelete := tMap.DeleteWithValue("nosuchvalue")
+	if tMap.Length() != 2 {
+		t.Errorf("Should have the same length when deleting non existent value.")
+	}
+	if didDelete != false {
+		t.Errorf("Should return false since nothing was deleted.")
+	}
+
+	didDelete = tMap.DeleteWithValue("val2")
+	if tMap.Length() != 1 {
+		t.Errorf("Should have deleted val2.")
+	}
+	if didDelete != true {
+		t.Errorf("Should return true since something was deleted.")
+	}
+	if tMap.GetKey("val2") != "" {
+		t.Errorf("Should have deleted val2.")
+	}
+	if tMap.GetValue("key2") != "" {
+		t.Errorf("Should have deleted key2.")
+	}
+}

@@ -88,6 +88,23 @@ func Test_MapUnmappedLightsSkipXSocketIds(t *testing.T) {
 	}
 }
 
+func Test_cleanInvalidMappedLightIds(t *testing.T) {
+	hueLights := make([]hue.Light, 4, 4)
+	hueLights[0].Id = "light3"
+
+	lightStrand := NewLightStrand(3, &huetest.StubAPI{})
+	lightStrand.Lights.Set("1", "light3")
+	lightStrand.Lights.Set("2", "missinglightid")
+
+	lightStrand.cleanInvalidMappedLightIds(hueLights)
+	if lightStrand.Lights.Length() != 1 {
+		t.Errorf("Should have deleted the bad key value")
+	}
+	if lightStrand.Lights.GetValue("2") != "" {
+		t.Errorf("Should have deleted key 2")
+	}
+}
+
 func Test_getUnmappedLightIds(t *testing.T) {
 	hueLights := make([]hue.Light, 4, 4)
 	hueLights[0].Id = "light3"
@@ -95,18 +112,13 @@ func Test_getUnmappedLightIds(t *testing.T) {
 	hueLights[2].Id = "light5"
 	hueLights[3].Id = "light2"
 
-	stubHueAPI := &huetest.StubAPI{}
-	stubHueAPI.GetLightsError = nil
-	stubHueAPI.GetLightsReturn = hueLights
-
-	lightStrand := NewLightStrand(3, stubHueAPI)
+	lightStrand := NewLightStrand(3, &huetest.StubAPI{})
 	lightStrand.Lights.Set("1", "light3")
 	lightStrand.Lights.Set("2", "light2")
 	lightStrand.Lights.Set("3", "light1")
-	lightStrand.Lights.Set("4", "missinglight")
 
 	expected := []string{"light5"}
-	actual, _ := lightStrand.getUnmappedLightIds()
+	actual := lightStrand.getUnmappedLightIds(hueLights)
 	if !stringSlicesEqual(expected, actual) {
 		t.Errorf("Expected a slice of all unmapped light ids. Expected %v but received %v.\n", expected, actual)
 	}

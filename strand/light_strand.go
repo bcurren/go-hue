@@ -52,11 +52,13 @@ func NewLightStrandWithMap(length int, api hue.API, initMap map[string]string) *
 // This should be used to interactively prompt a person to map a light to a position
 // in the strand.
 func (lg *LightStrand) MapUnmappedLights(socketToLightFunc func(string) string) error {
-	unmappedLightIds, err := lg.getUnmappedLightIds()
+	lights, err := lg.API.GetLights()
 	if err != nil {
 		return err
 	}
 
+	lg.cleanInvalidMappedLightIds(lights)
+	unmappedLightIds := lg.getUnmappedLightIds(lights)
 	white := createWhiteLightState()
 	red := createRedLightState()
 
@@ -90,12 +92,24 @@ func (lg *LightStrand) GetMap() map[string]string {
 	return lg.Lights.Normal
 }
 
-func (lg *LightStrand) getUnmappedLightIds() ([]string, error) {
-	allHueLights, err := lg.API.GetLights()
-	if err != nil {
-		return nil, err
-	}
+func (lg *LightStrand) cleanInvalidMappedLightIds(allHueLights []hue.Light) {
+	allMappedLightIds := lg.Lights.GetValues()
 
+	for _, mappedLightId := range allMappedLightIds {
+		invalidLightId := true
+		for _, hueLight := range allHueLights {
+			if hueLight.Id == mappedLightId {
+				invalidLightId = false
+				break
+			}
+		}
+		if invalidLightId {
+			lg.Lights.DeleteWithValue(mappedLightId)
+		}
+	}
+}
+
+func (lg *LightStrand) getUnmappedLightIds(allHueLights []hue.Light) []string {
 	allMappedLightIds := lg.Lights.GetValues()
 
 	unmappedLights := make([]string, 0, 5)
@@ -112,7 +126,7 @@ func (lg *LightStrand) getUnmappedLightIds() ([]string, error) {
 		}
 	}
 
-	return unmappedLights, nil
+	return unmappedLights
 }
 
 func (lg *LightStrand) validSocketId(socketId string) bool {
