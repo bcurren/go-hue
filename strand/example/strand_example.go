@@ -44,7 +44,7 @@ func main() {
 	}
 
 	lightStrand := strand.NewLightStrand(len(lights), user)
-	lightStrand.MapUnmappedLights(func() string {
+	lightStrand.MapUnmappedLights(func(lightId string) string {
 		fmt.Print("Enter the socket id of the red bulb: ")
 		var socketId string
 		fmt.Scanln(&socketId)

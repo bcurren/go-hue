@@ -1,18 +1,25 @@
 package example
 
+import (
+	"github.com/bcurren/go-hue"
+	"github.com/bcurren/go-hue/multi"
+	"testing"
+)
+
 func Test_Blah(t *testing.T) {
-	multi := MultiAPI(nil)
-	
+	multi := multi.NewMultiAPI()
+
 	bridges, err := hue.FindBridges()
 	if err != nil {
 		panic(err)
 	}
-	
+
 	for _, bridge := range bridges {
-		multi.AddAPI(bridge)
+		user := hue.NewUserWithBridge("test", bridge)
+		multi.AddAPI(user)
 	}
-	
-	lights, err := multi.GetLights()
+
+	_, err = multi.GetLights()
 	if err != nil {
 		panic(err)
 	}
