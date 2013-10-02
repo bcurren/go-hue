@@ -38,6 +38,13 @@ func NewLightStrandWithMap(length int, api hue.API, initMap map[string]string) *
 	return &lightStrand
 }
 
+func (lg *LightStrand) IsMappedSocketId(socketId string) bool {
+	if lg.Lights.GetKey(socketId) != "" {
+		return true
+	}
+	return false
+}
+
 // An interactive way of mapping all unmapped light bulbs on the hue bridge. This
 // function does the following:
 //

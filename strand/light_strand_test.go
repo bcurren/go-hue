@@ -170,3 +170,15 @@ func Test_validSocketId(t *testing.T) {
 		t.Error("Socket id that is not an int should be invalid.")
 	}
 }
+
+func Test_IsMappedSocketId(t *testing.T) {
+	lightStrand := NewLightStrand(3, nil)
+	if lightStrand.IsMappedSocketId("lightx") != false {
+		t.Error("Should return false since it's not mapped.")
+	}
+
+	lightStrand.Lights.Set("1", "lightx")
+	if lightStrand.IsMappedSocketId("lightx") != true {
+		t.Error("Should return true since it's mapped.")
+	}
+}
