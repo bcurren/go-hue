@@ -173,12 +173,12 @@ func Test_validSocketId(t *testing.T) {
 
 func Test_IsMappedSocketId(t *testing.T) {
 	lightStrand := NewLightStrand(3, nil)
-	if lightStrand.IsMappedSocketId("lightx") != false {
+	if lightStrand.IsMappedSocketId("1") != false {
 		t.Error("Should return false since it's not mapped.")
 	}
 
 	lightStrand.Lights.Set("1", "lightx")
-	if lightStrand.IsMappedSocketId("lightx") != true {
+	if lightStrand.IsMappedSocketId("1") != true {
 		t.Error("Should return true since it's mapped.")
 	}
 }

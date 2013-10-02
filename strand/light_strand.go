@@ -39,7 +39,7 @@ func NewLightStrandWithMap(length int, api hue.API, initMap map[string]string) *
 }
 
 func (lg *LightStrand) IsMappedSocketId(socketId string) bool {
-	if lg.Lights.GetKey(socketId) != "" {
+	if lg.Lights.GetValue(socketId) != "" {
 		return true
 	}
 	return false
