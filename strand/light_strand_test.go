@@ -103,6 +103,7 @@ func Test_getUnmappedLightIds(t *testing.T) {
 	lightStrand.Lights.Set("1", "light3")
 	lightStrand.Lights.Set("2", "light2")
 	lightStrand.Lights.Set("3", "light1")
+	lightStrand.Lights.Set("4", "missinglight")
 
 	expected := []string{"light5"}
 	actual, _ := lightStrand.getUnmappedLightIds()
