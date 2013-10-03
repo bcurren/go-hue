@@ -45,6 +45,16 @@ func (lg *LightStrand) IsMappedSocketId(socketId string) bool {
 	return false
 }
 
+func (lg *LightStrand) ChangeLength(newLength int) {
+	oldLength := lg.Length
+	lg.Length = newLength
+
+	for i := newLength + 1; i <= oldLength; i++ {
+		socketId := strconv.Itoa(i)
+		lg.Lights.DeleteWithKey(socketId)
+	}
+}
+
 // An interactive way of mapping all unmapped light bulbs on the hue bridge. This
 // function does the following:
 //
@@ -95,12 +105,12 @@ func (lg *LightStrand) MapUnmappedLights(normalState, selectedState *hue.LightSt
 			return err
 		}
 	}
-	
+
 	err = lg.API.SetGroupState(hue.AllLightsGroupId, normalState)
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 

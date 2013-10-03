@@ -51,6 +51,17 @@ func (m *TwoWayMap) DeleteWithValue(value string) bool {
 	return true
 }
 
+func (m *TwoWayMap) DeleteWithKey(key string) bool {
+	value := m.GetValue(key)
+	if value == "" {
+		return false
+	}
+	delete(m.Inverted, value)
+	delete(m.Normal, key)
+
+	return true
+}
+
 func (m *TwoWayMap) GetKeys() []string {
 	keys := make([]string, 0, len(m.Normal))
 	for k, _ := range m.Normal {

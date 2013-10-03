@@ -79,7 +79,7 @@ func Test_MapUnmappedLightsSkipXSocketIds(t *testing.T) {
 
 	lightStrand := NewLightStrand(3, stubHueAPI)
 	state := &hue.LightState{}
-	
+
 	err := lightStrand.MapUnmappedLights(state, state, func(string) string {
 		return "x"
 	})
@@ -184,5 +184,29 @@ func Test_IsMappedSocketId(t *testing.T) {
 	lightStrand.Lights.Set("1", "lightx")
 	if lightStrand.IsMappedSocketId("1") != true {
 		t.Error("Should return true since it's mapped.")
+	}
+}
+
+func Test_ChangeLength(t *testing.T) {
+	lightStrand := NewLightStrand(3, nil)
+	lightStrand.Lights.Set("1", "light1")
+	lightStrand.Lights.Set("2", "light2")
+	lightStrand.Lights.Set("3", "light3")
+
+	lightStrand.ChangeLength(2)
+	if lightStrand.Length != 2 {
+		t.Error("Should have changed the length to 2")
+	}
+	if lightStrand.Lights.Length() != 2 {
+		t.Error("Should have changed the lights map length to 2.")
+	}
+	if lightStrand.Lights.GetValue("1") != "light1" {
+		t.Error("Light 1 should still exist.")
+	}
+	if lightStrand.Lights.GetValue("2") != "light2" {
+		t.Error("Light 2 should still exist.")
+	}
+	if lightStrand.Lights.GetValue("3") != "" {
+		t.Error("Light 3 should be deleted.")
 	}
 }
