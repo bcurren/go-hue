@@ -55,6 +55,16 @@ func (lg *LightStrand) ChangeLength(newLength int) {
 	}
 }
 
+func (lg *LightStrand) CleanInvalidLightIds() error {
+	lights, err := lg.API.GetLights()
+	if err != nil {
+		return err
+	}
+
+	lg.cleanInvalidMappedLightIds(lights)
+	return nil
+}
+
 // An interactive way of mapping all unmapped light bulbs on the hue bridge. This
 // function does the following:
 //
