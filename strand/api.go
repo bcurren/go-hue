@@ -91,7 +91,7 @@ func (lg *LightStrand) mapLightIdsToSocketIds(lights []hue.Light) []hue.Light {
 		socketId, err := lg.getSocketIdFromLightId(light.Id)
 		// Skip any lights that haven't been registered with strand
 		if err != nil {
-			break
+			continue
 		}
 
 		light.Id = socketId

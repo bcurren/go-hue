@@ -28,7 +28,7 @@ func Test_GetLights(t *testing.T) {
 	strand := NewLightStrand(3, stubAPI)
 	strand.Lights.Set("1", "light1")
 	strand.Lights.Set("2", "light2")
-	strand.Lights.Set("3", "light3")
+	strand.Lights.Set("4", "light4")
 
 	lights, err := strand.GetLights()
 	if err != nil {
@@ -36,9 +36,9 @@ func Test_GetLights(t *testing.T) {
 	}
 
 	if len(lights) != 3 {
-		t.Error("Should only map lights assigned in strand.")
+		t.Error("Should only map lights assigned in strand.", len(lights))
 	}
-	if lights[0].Id != "1" || lights[1].Id != "2" || lights[2].Id != "3" {
+	if lights[0].Id != "1" || lights[1].Id != "2" || lights[2].Id != "4" {
 		t.Error("Should have mapped lightIds to socketIds.")
 	}
 }
