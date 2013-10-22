@@ -81,14 +81,7 @@ func (lg *LightStrand) CleanInvalidLightIds() error {
 func (lg *LightStrand) MapUnmappedLights(normalState, selectedState *hue.LightState,
 	socketToLightFunc func(string) string) error {
 
-	lights, err := lg.API.GetLights()
-	if err != nil {
-		return err
-	}
-
-	lg.cleanInvalidMappedLightIds(lights)
-	unmappedLightIds := lg.GetUnmappedLightIds(lights)
-	err = lg.API.SetGroupState(hue.AllLightsGroupId, normalState)
+	unmappedLightIds, err := lg.GetUnmappedLightIds()
 	if err != nil {
 		return err
 	}
@@ -124,6 +117,19 @@ func (lg *LightStrand) MapUnmappedLights(normalState, selectedState *hue.LightSt
 	return nil
 }
 
+// Get a list of the unmapped light ids.
+func (lg *LightStrand) GetUnmappedLightIds() ([]string, error) {
+	lights, err := lg.API.GetLights()
+	if err != nil {
+		return nil, err
+	}
+
+	lg.cleanInvalidMappedLightIds(lights)
+	unmappedLightIds := lg.getUnmappedLightIds(lights)
+
+	return unmappedLightIds, nil
+}
+
 func (lg *LightStrand) GetMap() map[string]string {
 	return lg.Lights.Normal
 }
@@ -145,7 +151,7 @@ func (lg *LightStrand) cleanInvalidMappedLightIds(allHueLights []hue.Light) {
 	}
 }
 
-func (lg *LightStrand) GetUnmappedLightIds(allHueLights []hue.Light) []string {
+func (lg *LightStrand) getUnmappedLightIds(allHueLights []hue.Light) []string {
 	allMappedLightIds := lg.Lights.GetValues()
 
 	unmappedLights := make([]string, 0, 5)

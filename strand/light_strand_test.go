@@ -109,7 +109,7 @@ func Test_cleanInvalidMappedLightIds(t *testing.T) {
 	}
 }
 
-func Test_GetUnmappedLightIds(t *testing.T) {
+func Test_getUnmappedLightIds(t *testing.T) {
 	hueLights := make([]hue.Light, 4, 4)
 	hueLights[0].Id = "light3"
 	hueLights[1].Id = "light1"
@@ -122,7 +122,7 @@ func Test_GetUnmappedLightIds(t *testing.T) {
 	lightStrand.Lights.Set("3", "light1")
 
 	expected := []string{"light5"}
-	actual := lightStrand.GetUnmappedLightIds(hueLights)
+	actual := lightStrand.getUnmappedLightIds(hueLights)
 	if !stringSlicesEqual(expected, actual) {
 		t.Errorf("Expected a slice of all unmapped light ids. Expected %v but received %v.\n", expected, actual)
 	}
