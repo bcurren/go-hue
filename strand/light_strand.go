@@ -85,6 +85,11 @@ func (lg *LightStrand) MapUnmappedLights(normalState, selectedState *hue.LightSt
 	if err != nil {
 		return err
 	}
+	
+	err = lg.API.SetGroupState(hue.AllLightsGroupId, normalState)
+	if err != nil {
+		return err
+	}
 
 	for _, unmappedLightId := range unmappedLightIds {
 		// Turn new unmapped light selected state
