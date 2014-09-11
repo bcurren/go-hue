@@ -46,5 +46,7 @@ func (s *httpServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 func cleanURL(url string) string {
 	doubleSlash := regexp.MustCompile(`/+`)
 	url = doubleSlash.ReplaceAllString(url, "/")
-	return strings.Replace(url, "http:/", "http://", -1)
+	url = strings.Replace(url, "http:/", "http://", -1)
+	url = strings.Replace(url, "https:/", "https://", -1)
+	return url
 }
