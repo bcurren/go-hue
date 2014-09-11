@@ -22,7 +22,6 @@ func (s *httpServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 	}
 
 	url := cleanURL(fmt.Sprintf("%s/%s", s.addr, uri))
-
 	httpRequest, err := http.NewRequest(method, url, bytes.NewReader(requestBytes))
 	if err != nil {
 		return nil, err
