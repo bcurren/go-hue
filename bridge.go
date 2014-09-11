@@ -29,6 +29,30 @@ func FindBridges() ([]*Bridge, error) {
 	return bridges, nil
 }
 
+type cloudBridge struct {
+	ID                string `json:"id,omitempty"`
+	InternalIPAddress string `json:"internalipaddress,omitempty"`
+}
+
+func FindBridgesUsingCloud() ([]*Bridge, error) {
+
+	var response []cloudBridge
+
+	err := NewHTTPClient("https://www.meethue.com").Get("/api/nupnp", &response)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var bridges []*Bridge
+
+	for _, info := range response {
+		bridges = append(bridges, NewBridge(info.ID, "http://"+info.InternalIPAddress))
+	}
+
+	return bridges, nil
+}
+
 func reduceToHueDevices(devices []ssdp.Device) []ssdp.Device {
 	hueDevices := make([]ssdp.Device, 0, len(devices))
 

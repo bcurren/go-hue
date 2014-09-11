@@ -22,6 +22,7 @@ func (s *httpServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 	}
 
 	url := cleanURL(fmt.Sprintf("%s/%s", s.addr, uri))
+
 	httpRequest, err := http.NewRequest(method, url, bytes.NewReader(requestBytes))
 	if err != nil {
 		return nil, err
@@ -46,5 +47,7 @@ func (s *httpServer) Do(method string, uri string, requestBytes []byte) ([]byte,
 func cleanURL(url string) string {
 	doubleSlash := regexp.MustCompile(`/+`)
 	url = doubleSlash.ReplaceAllString(url, "/")
-	return strings.Replace(url, "http:/", "http://", -1)
+	url = strings.Replace(url, "http:/", "http://", -1)
+	url = strings.Replace(url, "https:/", "https://", -1)
+	return url
 }
